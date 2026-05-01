@@ -1,0 +1,2015 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920">
+<title>HIT 物件検索 モック - 貸_区分マンション v1.5</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body {
+  font-family: -apple-system, BlinkMacSystemFont, "Yu Gothic UI", "Yu Gothic", "Meiryo", "Hiragino Sans", "Segoe UI", sans-serif;
+  font-size: 12px;
+  color: #1a1a1a;
+  background: #f5f5f7;
+  min-width: 1920px;
+}
+
+/* ========== レビューバナー ========== */
+.review-banner {
+  background: #fef3c7;
+  border-bottom: 2px solid #f59e0b;
+  padding: 8px 16px;
+  font-size: 12px;
+  color: #78350f;
+  text-align: center;
+  font-weight: 500;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.review-banner .em {
+  background: #f59e0b;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 3px;
+  margin-right: 8px;
+  font-size: 11px;
+}
+
+/* ========== ヘッダー ========== */
+.app-header {
+  background: white;
+  border-bottom: 1px solid #d1d5db;
+  padding: 8px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 50px;
+}
+.breadcrumb {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+}
+.breadcrumb .sep { color: #9ca3af; margin: 0 6px; font-weight: 400; }
+.breadcrumb .small { font-weight: 400; color: #6b7280; font-size: 13px; }
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+}
+.sort-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.sort-label {
+  color: #6b7280;
+  font-size: 11px;
+}
+.sort-select {
+  padding: 4px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  background: white;
+  font-size: 12px;
+  cursor: pointer;
+  min-width: 180px;
+}
+.result-count {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1f2937;
+}
+.result-count strong { color: #b45309; font-size: 16px; margin: 0 2px; }
+
+/* ========== レイアウト ========== */
+.main-container {
+  display: flex;
+  width: 1920px;
+}
+.filter-panel {
+  width: 320px;
+  flex-shrink: 0;
+  background: white;
+  border-right: 1px solid #d1d5db;
+  padding: 12px;
+  height: calc(100vh - 50px - 32px);
+  overflow-y: auto;
+}
+.result-area {
+  flex: 1;
+  overflow-x: auto;
+  background: white;
+}
+
+/* ========== フィルタパネル ========== */
+.filter-section {
+  border-bottom: 1px solid #e5e7eb;
+  padding: 10px 4px 12px;
+}
+.filter-section:last-child { border-bottom: none; }
+.filter-section.hit-axis {
+  background: #fffbeb;
+  margin: 4px -12px;
+  padding: 10px 16px 12px;
+  border-top: 2px solid #f59e0b;
+  border-bottom: 2px solid #f59e0b;
+}
+.filter-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.filter-title .num {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  background: #1f2937;
+  color: white;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 18px;
+  font-size: 10px;
+  font-weight: 600;
+}
+.filter-section.hit-axis .filter-title .num {
+  background: #b45309;
+}
+.filter-section.hit-axis .filter-title::after {
+  content: "★ HIT独自";
+  background: #f59e0b;
+  color: white;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-weight: 500;
+  margin-left: 4px;
+}
+.filter-item {
+  margin-bottom: 8px;
+}
+.filter-item:last-child { margin-bottom: 0; }
+.filter-item-label {
+  font-size: 11px;
+  color: #6b7280;
+  margin-bottom: 3px;
+  font-weight: 500;
+}
+
+/* チェックボックスグリッド（区） */
+.ward-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px 6px;
+  font-size: 11px;
+}
+.ward-grid label {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  padding: 2px 0;
+}
+.ward-grid input { margin: 0; cursor: pointer; }
+
+/* テキスト入力 */
+.text-input {
+  width: 100%;
+  padding: 4px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 3px;
+  font-size: 11px;
+  background: white;
+}
+.text-input:focus { outline: none; border-color: #3b82f6; }
+
+/* ボタングループ */
+.btn-group {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.btn-group button {
+  padding: 4px 8px;
+  border: 1px solid #d1d5db;
+  background: white;
+  border-radius: 3px;
+  font-size: 11px;
+  cursor: pointer;
+  color: #374151;
+}
+.btn-group button.active {
+  background: #1f2937;
+  color: white;
+  border-color: #1f2937;
+}
+.btn-group button:hover:not(.active) {
+  background: #f3f4f6;
+}
+
+/* スライダー */
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}
+.slider-row input[type="number"] {
+  width: 60px;
+  padding: 3px 6px;
+  border: 1px solid #d1d5db;
+  border-radius: 3px;
+  font-size: 11px;
+}
+.slider-row span { color: #6b7280; font-size: 10px; }
+.slider-row .unit { color: #6b7280; font-size: 10px; }
+.slider-track {
+  flex: 1;
+  height: 4px;
+  background: #e5e7eb;
+  border-radius: 2px;
+  position: relative;
+  margin: 0 2px;
+}
+.slider-fill {
+  position: absolute;
+  height: 100%;
+  background: #3b82f6;
+  border-radius: 2px;
+}
+.filter-section.hit-axis .slider-fill {
+  background: #f59e0b;
+}
+
+/* チェックボックスリスト */
+.check-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 3px 8px;
+  font-size: 11px;
+}
+.check-list label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+.check-list input { margin: 0; cursor: pointer; }
+
+/* ===== 物件ステータスバッジ（在庫/変更/推定成約/成約） ===== */
+.status-badge {
+  display: inline-block;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 9px;
+  font-weight: 700;
+  margin-right: 3px;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+.status-zaiko { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+.status-henko { background: #fef3c7; color: #92400e; border: 1px solid #fbbf24; }
+.status-suiteijoyaku { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+.status-joyaku { background: #f3f4f6; color: #4b5563; border: 1px solid #d1d5db; }
+.filter-section.status-filter {
+  background: #f0f9ff;
+  margin: 4px -12px;
+  padding: 10px 16px 12px;
+  border-top: 2px solid #0284c7;
+  border-bottom: 2px solid #0284c7;
+}
+.filter-section.status-filter .filter-title { color: #075985; }
+.filter-section.status-filter .filter-title .num { background: #0284c7; }
+.status-checklist {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 8px;
+}
+.status-checklist label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  font-size: 11px;
+  padding: 4px 6px;
+  border-radius: 3px;
+  background: white;
+  border: 1px solid #e5e7eb;
+}
+.status-checklist label:hover { background: #f9fafb; }
+.status-checklist input { margin: 0; cursor: pointer; }
+
+/* ===== データ期間フィルタ ===== */
+.period-select {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  background: white;
+  font-size: 12px;
+  color: #1f2937;
+  cursor: pointer;
+}
+.period-select:hover { border-color: #0284c7; }
+.period-summary-bar {
+  display: inline-block;
+  background: #fef3c7;
+  color: #92400e;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid #fbbf24;
+  margin-bottom: 6px;
+}
+.period-summary-bar .label { font-weight: 500; opacity: 0.8; margin-right: 4px; }
+.cell-date {
+  font-size: 11px;
+  color: #4b5563;
+  white-space: nowrap;
+}
+
+/* ========== 結果テーブル ========== */
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+table.results {
+  border-collapse: collapse;
+  font-size: 11px;
+  table-layout: fixed;
+  width: 1600px;
+}
+table.results thead th {
+  background: #f3f4f6;
+  border-bottom: 1.5px solid #d1d5db;
+  border-right: 1px solid #e5e7eb;
+  padding: 6px 4px;
+  font-weight: 600;
+  color: #374151;
+  font-size: 10px;
+  text-align: left;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+table.results thead th.hit { background: #fef3c7; color: #78350f; }
+table.results thead th.right { text-align: right; }
+table.results thead th.center { text-align: center; }
+table.results tbody td {
+  border-bottom: 1px solid #e5e7eb;
+  border-right: 1px solid #f3f4f6;
+  padding: 6px 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+table.results tbody td.right { text-align: right; }
+table.results tbody td.center { text-align: center; }
+table.results tbody td.hit { background: #fffbeb; }
+table.results tbody tr {
+  cursor: pointer;
+}
+table.results tbody tr:hover {
+  background: #eff6ff !important;
+}
+table.results tbody tr:hover td.hit {
+  background: #fef3c7 !important;
+}
+table.results tbody tr:nth-child(even) {
+  background: #fafafa;
+}
+table.results tbody tr:nth-child(even) td.hit {
+  background: #fef9e7;
+}
+.cell-id { color: #2563eb; font-family: monospace; }
+.cell-bldg-name {
+  cursor: help;
+  position: relative;
+}
+.cell-addr {
+  color: #2563eb;
+  cursor: help;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+}
+.cell-link {
+  background: #1f2937;
+  color: white !important;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 10px;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+/* 建物属性アイコン */
+.bldg-attr {
+  display: inline-block;
+  width: 28px;
+  height: 20px;
+  line-height: 20px;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 3px;
+}
+.bldg-attr.on {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #86efac;
+}
+.bldg-attr.off {
+  background: #f3f4f6;
+  color: #d1d5db;
+  border: 1px solid #e5e7eb;
+}
+.bldg-attr.null {
+  background: transparent;
+  color: transparent;
+}
+
+/* HIT独自軸セル */
+td.hit-strong {
+  font-weight: 600;
+  color: #92400e;
+}
+
+/* ホバーツールチップ */
+.tooltip {
+  position: absolute;
+  background: #1f2937;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  white-space: nowrap;
+  z-index: 1000;
+  pointer-events: none;
+  display: none;
+}
+.tooltip.show { display: block; }
+
+/* ========== モーダル ========== */
+.modal-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 200;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 32px 16px;
+  overflow-y: auto;
+}
+.modal-backdrop.show { display: flex; }
+.modal {
+  background: white;
+  width: 1400px;
+  max-width: 95%;
+  border-radius: 8px;
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+  display: flex;
+  flex-direction: column;
+}
+.modal-header {
+  padding: 14px 20px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f9fafb;
+  border-radius: 8px 8px 0 0;
+  position: sticky;
+  top: 0;
+}
+.modal-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+}
+.modal-title .id { color: #2563eb; font-family: monospace; margin-right: 12px; font-size: 13px; }
+.modal-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.modal-controls button {
+  padding: 4px 10px;
+  border: 1px solid #d1d5db;
+  background: white;
+  border-radius: 3px;
+  font-size: 11px;
+  cursor: pointer;
+}
+.modal-controls button:hover { background: #f3f4f6; }
+.modal-close {
+  background: none !important;
+  border: none !important;
+  font-size: 18px !important;
+  padding: 0 8px !important;
+  cursor: pointer;
+  color: #6b7280;
+}
+.modal-body {
+  padding: 16px 20px;
+  overflow-y: visible;
+}
+
+/* モーダルセクション */
+.modal-section {
+  margin-bottom: 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.modal-section-header {
+  background: #f3f4f6;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1f2937;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.modal-section-header .badge {
+  background: #1f2937;
+  color: white;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-family: monospace;
+}
+.modal-section-header.hit .badge { background: #b45309; }
+.modal-section-header.hit { background: #fffbeb; color: #78350f; }
+.modal-section-header .em-tag {
+  background: #f59e0b;
+  color: white;
+  font-size: 9px;
+  padding: 1px 4px;
+  border-radius: 2px;
+  margin-left: auto;
+}
+.modal-section-body {
+  padding: 12px;
+  font-size: 11px;
+  background: white;
+}
+
+/* スペック表 */
+.spec-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px 16px;
+}
+.spec-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: 6px;
+  border-bottom: 1px dashed #e5e7eb;
+}
+.spec-label {
+  font-size: 10px;
+  color: #6b7280;
+  font-weight: 500;
+}
+.spec-value {
+  font-size: 12px;
+  color: #1f2937;
+  font-weight: 500;
+}
+
+/* 履歴テーブル（B, C, D） */
+table.sub {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+table.sub th {
+  background: #f9fafb;
+  padding: 5px 8px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 600;
+  color: #6b7280;
+  border-bottom: 1px solid #e5e7eb;
+}
+table.sub td {
+  padding: 5px 8px;
+  border-bottom: 1px solid #f3f4f6;
+}
+table.sub td.right { text-align: right; }
+.subtable-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.subtable-tabs button {
+  padding: 4px 10px;
+  border: 1px solid #d1d5db;
+  background: white;
+  border-radius: 3px 3px 0 0;
+  font-size: 11px;
+  cursor: pointer;
+}
+.subtable-tabs button.active {
+  background: #1f2937;
+  color: white;
+  border-color: #1f2937;
+}
+
+/* E: 利回りシミュ */
+.yield-sim {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+.yield-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  padding: 10px 12px;
+  background: white;
+}
+.yield-card-header {
+  font-size: 11px;
+  color: #6b7280;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+.yield-card-rent {
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+.yield-card-yield {
+  font-size: 22px;
+  font-weight: 700;
+  color: #b45309;
+}
+.yield-card.input {
+  background: #fffbeb;
+  border-color: #f59e0b;
+}
+.yield-card input {
+  width: 80px;
+  padding: 4px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 3px;
+  font-size: 12px;
+  margin-right: 4px;
+}
+
+/* H: 価格妥当性 */
+.valuation-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.valuation-row {
+  display: grid;
+  grid-template-columns: 1fr 100px 60px 80px;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px dashed #e5e7eb;
+  align-items: center;
+  font-size: 11px;
+}
+.valuation-row.this {
+  background: #f0f9ff;
+  border: 1px solid #3b82f6;
+  border-radius: 4px;
+  padding: 8px 10px;
+  font-weight: 600;
+}
+.valuation-row .label { color: #6b7280; font-size: 10px; }
+.valuation-row .value { text-align: right; font-weight: 600; font-family: monospace; }
+.valuation-row .count { text-align: right; color: #6b7280; font-size: 10px; }
+.valuation-row .delta { text-align: right; }
+.delta.high { color: #dc2626; }
+.delta.low { color: #16a34a; }
+
+/* マップ */
+.map-area {
+  height: 240px;
+  background: #f3f4f6;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  font-size: 12px;
+  background-image: 
+    linear-gradient(45deg, #e5e7eb 25%, transparent 25%),
+    linear-gradient(-45deg, #e5e7eb 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #e5e7eb 75%),
+    linear-gradient(-45deg, transparent 75%, #e5e7eb 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+  position: relative;
+}
+.map-pin {
+  width: 24px;
+  height: 30px;
+  background: #dc2626;
+  position: absolute;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  top: 50%;
+  left: 50%;
+  margin: -15px 0 0 -12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+.map-pin::after {
+  content: "";
+  width: 10px; height: 10px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 7px; left: 7px;
+}
+
+/* G: 担当業者 */
+.agent-warning {
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 10px;
+  color: #991b1b;
+  margin-bottom: 8px;
+}
+.agent-info {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px 16px;
+}
+
+/* レビューフッター（各セクションに付ける） */
+.review-comment-box {
+  background: #fef9c3;
+  border: 1px dashed #ca8a04;
+  border-radius: 4px;
+  padding: 6px 10px;
+  margin-top: 6px;
+  font-size: 10px;
+  color: #713f12;
+}
+.review-comment-box::before {
+  content: "💬 ";
+}
+
+/* ========== その他 ========== */
+.icon-text {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.spacer { height: 8px; }
+.row-flex {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.tag {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 500;
+}
+.tag.green { background: #dcfce7; color: #166534; }
+.tag.gray { background: #f3f4f6; color: #6b7280; }
+.tag.amber { background: #fef3c7; color: #78350f; }
+.tag.blue { background: #dbeafe; color: #1e40af; }
+
+/* レビューサイド注釈 */
+.side-review-note {
+  background: #eff6ff;
+  border-left: 3px solid #3b82f6;
+  padding: 6px 10px;
+  margin: 12px -8px 0;
+  font-size: 10px;
+  color: #1e40af;
+  line-height: 1.5;
+}
+.side-review-note strong { display: block; margin-bottom: 2px; color: #1e3a8a; }
+</style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- ============= レビューバナー ============= -->
+<!-- ============================================================ -->
+<div class="review-banner">
+  <span class="em">レビュー版モック 貸_区分マンション v1.5</span>
+  画面の絞り込み項目・列構成・モーダル内容は<strong>すべて追加・削除・変更可能</strong>です。気になる点・追加したい項目・不要な項目があれば遠慮なくご指摘ください。データはダミー、ボタンは動きません。
+  <span style="display:block; margin-top:4px; font-size:11px; color:#92400e; font-weight:400;">
+    ※ 一部の物件で建物名欄が <span style="color:#9ca3af; font-style:italic;">(建物名なし)</span> となっています。これは building_master との紐付けに失敗したケースで、その場合は <strong>全住所（番地・号）も取得できず</strong>、町丁目レベルまでしか分かりません。建物固有の情報（総階・構造・設備）も全て不明。住所・価格・面積などREINS由来の最低限の情報のみ取得できる状態です。実データでも一定割合で発生する見込み。
+  </span>
+</div>
+
+<!-- ============================================================ -->
+<!-- ============= ヘッダー ============= -->
+<!-- ============================================================ -->
+<header class="app-header">
+  <div class="breadcrumb">
+    HIT 物件検索 <span class="sep">/</span> 貸す <span class="sep">/</span> 区分マンション
+    <span class="small" style="margin-left:12px;">（貸_区分マンション）</span>
+  </div>
+  <div class="header-right">
+    <div class="sort-group">
+      <span class="sort-label">第1ソート（HIT独自）</span>
+      <select class="sort-select">
+        <option>在庫日数 長い順</option>
+        <option>在庫日数 短い順</option>
+        <option>賃料変更回数 多い順</option>
+        <option>賃料変更回数 少ない順</option>
+        <option>なし</option>
+      </select>
+    </div>
+    <div class="sort-group">
+      <span class="sort-label">第2ソート</span>
+      <select class="sort-select">
+        <option>賃料単価 安い順</option>
+        <option>新着順（登録日新しい順）</option>
+        <option>賃料 安い順</option>
+        <option>賃料 高い順</option>
+        <option>賃料単価 高い順</option>
+        <option>築年 新しい順</option>
+        <option>築年 古い順</option>
+        <option>駅近順（徒歩分少ない順）</option>
+        <option>専有面積 広い順</option>
+        <option>なし</option>
+      </select>
+    </div>
+    <div class="result-count">
+      検索結果 <strong id="result-count">12</strong> 件
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================ -->
+<!-- ============= メインレイアウト ============= -->
+<!-- ============================================================ -->
+<div class="main-container">
+
+  <!-- ===================== 左サイドバー：絞り込み ===================== -->
+  <aside class="filter-panel">
+
+    <!-- ⓪ 物件ステータス ★最上位の絞り込み条件 -->
+    <div class="filter-section status-filter">
+      <div class="filter-title">
+        <span class="num">★</span>物件ステータス
+        <span style="background:#0284c7; color:white; font-size:10px; padding:1px 6px; border-radius:3px; font-weight:500; margin-left:4px;">必須</span>
+      </div>
+      <div class="filter-item">
+        <div class="filter-item-label">表示する物件の状態（複数選択可、未選択時は0件）</div>
+        <div class="status-checklist">
+          <label><input type="checkbox"><span class="status-badge status-zaiko">在庫</span><span style="font-size:10px; color:#6b7280;">現役・変更なし</span></label>
+          <label><input type="checkbox"><span class="status-badge status-henko">変更</span><span style="font-size:10px; color:#6b7280;">現役・履歴あり</span></label>
+          <label><input type="checkbox"><span class="status-badge status-suiteijoyaku">推定成約</span><span style="font-size:10px; color:#6b7280;">在庫から消失</span></label>
+          <label><input type="checkbox"><span class="status-badge status-joyaku">成約</span><span style="font-size:10px; color:#6b7280;">REINS成約データ</span></label>
+        </div>
+      </div>
+      <div style="font-size:10px; color:#075985; background:#cffafe; padding:6px 8px; border-radius:4px; margin-top:6px; line-height:1.5; border:1px dashed #0284c7;">
+        💡 <strong>4状態の意味：</strong><br>
+        <strong>在庫</strong>＝REINS現役登録、賃料変更履歴なし／<strong>変更</strong>＝REINS現役登録、賃料変更履歴あり／<strong>推定成約</strong>＝disappear_detector 検出（在庫から消失＝入居決定）／<strong>成約</strong>＝REINS成約データに登録済み<br>
+        <strong>※ SUUMO・HOME'S等の将来統合データは「成約」非対応</strong>（3分類のみ）<br>
+        <strong>※ デモ用にサンプル全件表示中。</strong>実装時は4つすべてOFFだと0件表示。
+      </div>
+    </div>
+
+    <!-- ⓪' データ期間 ★最上位の絞り込み条件 -->
+    <div class="filter-section status-filter">
+      <div class="filter-title">
+        <span class="num">★</span>データ期間
+        <span style="background:#0284c7; color:white; font-size:10px; padding:1px 6px; border-radius:3px; font-weight:500; margin-left:4px;">必須</span>
+      </div>
+      <div class="filter-item">
+        <div class="filter-item-label">クイック選択</div>
+        <select id="period-select" class="period-select" onchange="onPeriodPresetChange()">
+          <option value="all" selected>全期間</option>
+          <option value="last_1y">直近1年</option>
+          <option value="last_3y">直近3年</option>
+          <option value="cy2026">2026年（2026/1〜2026/12）</option>
+          <option value="cy2025">2025年（2025/1〜2025/12）</option>
+          <option value="cy2024">2024年（2024/1〜2024/12）</option>
+          <option value="cy2023">2023年（2023/1〜2023/12）</option>
+          <option value="cy2022">2022年（2022/1〜2022/12）</option>
+          <option value="cy2021">2021年（2021/1〜2021/12）</option>
+          <option value="cy2020">2020年（2020/1〜2020/12）</option>
+          <option value="custom">カスタム範囲（下で年指定）</option>
+        </select>
+      </div>
+      <div class="filter-item">
+        <div class="filter-item-label">細かく指定（年単位）</div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <select id="period-from-year" class="period-select" style="flex:1;" onchange="onPeriodCustomChange()">
+            <option value="2015" selected>2015年</option><option value="2016">2016年</option><option value="2017">2017年</option><option value="2018">2018年</option><option value="2019">2019年</option><option value="2020">2020年</option><option value="2021">2021年</option><option value="2022">2022年</option><option value="2023">2023年</option><option value="2024">2024年</option><option value="2025">2025年</option><option value="2026">2026年</option>
+          </select>
+          <span style="color:#075985; font-weight:600;">〜</span>
+          <select id="period-to-year" class="period-select" style="flex:1;" onchange="onPeriodCustomChange()">
+            <option value="2015">2015年</option><option value="2016">2016年</option><option value="2017">2017年</option><option value="2018">2018年</option><option value="2019">2019年</option><option value="2020">2020年</option><option value="2021">2021年</option><option value="2022">2022年</option><option value="2023">2023年</option><option value="2024">2024年</option><option value="2025">2025年</option><option value="2026" selected>2026年</option>
+          </select>
+        </div>
+      </div>
+      <div style="font-size:10px; color:#075985; background:#cffafe; padding:6px 8px; border-radius:4px; margin-top:6px; line-height:1.5; border:1px dashed #0284c7;">
+        💡 <strong>判定基準：</strong>在庫・変更=登録日／推定成約=消失検出日（入居決定推定）／成約=成約日。<br>
+        <strong>すべて暦年（1月〜12月）基準。</strong>例：「2023年〜2025年」は 2023/01/01〜2025/12/31。<br>
+        集計サマリーバーの平均値・中央値はこの期間内のデータで算出されます。<br>
+        <strong>※ デモ用にサンプル全件表示中。</strong>
+      </div>
+    </div>
+
+    <!-- ① エリア -->
+    <div class="filter-section">
+      <div class="filter-title"><span class="num">1</span>エリア</div>
+      <div class="filter-item">
+        <div class="filter-item-label">区（複数選択）</div>
+        <div class="ward-grid">
+          <label><input type="checkbox" checked>新宿</label>
+          <label><input type="checkbox" checked>渋谷</label>
+          <label><input type="checkbox">港</label>
+          <label><input type="checkbox">千代田</label>
+          <label><input type="checkbox" checked>中央</label>
+          <label><input type="checkbox">文京</label>
+          <label><input type="checkbox" checked>台東</label>
+          <label><input type="checkbox" checked>墨田</label>
+          <label><input type="checkbox">江東</label>
+          <label><input type="checkbox">品川</label>
+          <label><input type="checkbox">目黒</label>
+          <label><input type="checkbox">大田</label>
+          <label><input type="checkbox">世田谷</label>
+          <label><input type="checkbox" checked>中野</label>
+          <label><input type="checkbox" checked>杉並</label>
+          <label><input type="checkbox">豊島</label>
+          <label><input type="checkbox">北</label>
+          <label><input type="checkbox">荒川</label>
+          <label><input type="checkbox">板橋</label>
+          <label><input type="checkbox" checked>練馬</label>
+          <label><input type="checkbox">足立</label>
+          <label><input type="checkbox" checked>葛飾</label>
+          <label><input type="checkbox">江戸川</label>
+        </div>
+      </div>
+      <div class="filter-item">
+        <div class="filter-item-label">町名・丁目（オートコンプリート、複数選択可）</div>
+        <input type="text" class="text-input" placeholder="例: 西新宿2、阿佐ヶ谷北、高田馬場3">
+        <div style="margin-top:4px; display:flex; gap:4px; flex-wrap:wrap;">
+          <span class="tag blue" style="font-size:10px; cursor:pointer;">西新宿2 ×</span>
+          <span class="tag blue" style="font-size:10px; cursor:pointer;">高田馬場3 ×</span>
+        </div>
+      </div>
+      <div class="filter-item">
+        <div class="filter-item-label">沿線・駅（オートコンプリート、複数選択可）</div>
+        <input type="text" class="text-input" placeholder="例: 新宿駅、山手線">
+      </div>
+      <div class="filter-item">
+        <div class="filter-item-label">駅徒歩（分）</div>
+        <div class="slider-row">
+          <input type="number" placeholder="0">
+          <span>〜</span>
+          <input type="number" value="10">
+          <span class="unit">分</span>
+        </div>
+        <div class="slider-track" style="margin-top:4px;">
+          <div class="slider-fill" style="left:0; width:33%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ② 賃料 -->
+    <div class="filter-section">
+      <div class="filter-title"><span class="num">2</span>賃料</div>
+      <div class="filter-item">
+        <div class="filter-item-label">賃料（万円/月）</div>
+        <div class="slider-row">
+          <input type="number" value="8" step="0.1">
+          <span>〜</span>
+          <input type="number" value="20" step="0.1">
+          <span class="unit">万円</span>
+        </div>
+        <div class="slider-track" style="margin-top:4px;">
+          <div class="slider-fill" style="left:15%; width:35%;"></div>
+        </div>
+      </div>
+      <div class="filter-item">
+        <div class="filter-item-label">賃料単価（円/㎡/月）</div>
+        <div class="slider-row">
+          <input type="number" placeholder="-">
+          <span>〜</span>
+          <input type="number" value="4500">
+          <span class="unit">円/㎡</span>
+        </div>
+        <div class="slider-track" style="margin-top:4px;">
+          <div class="slider-fill" style="left:0; width:60%;"></div>
+        </div>
+      </div>
+      <div class="filter-item">
+        <div class="filter-item-label">管理費（円/月）</div>
+        <div class="slider-row">
+          <input type="number" placeholder="-">
+          <span>〜</span>
+          <input type="number" placeholder="-">
+          <span class="unit">円</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 敷金・礼金（賃貸特有のクイック絞り込み） -->
+    <div class="filter-section" style="background: #fdf4ff; margin: 4px -12px; padding: 10px 16px 12px; border-top: 1px solid #d8b4fe; border-bottom: 1px solid #d8b4fe;">
+      <div class="filter-title" style="color: #7e22ce;">
+        敷金・礼金
+        <span style="background:#a855f7; color:white; font-size:10px; padding:1px 6px; border-radius:3px; font-weight:500; margin-left:4px;">よく使う</span>
+      </div>
+      <div class="filter-item">
+        <div class="filter-item-label">敷金</div>
+        <div class="btn-group">
+          <button>0ヶ月（敷金ゼロ）</button>
+          <button class="active">1ヶ月以下</button>
+          <button>2ヶ月以下</button>
+          <button>制限なし</button>
+        </div>
+      </div>
+      <div class="filter-item">
+        <div class="filter-item-label">礼金</div>
+        <div class="btn-group">
+          <button>0ヶ月（礼金ゼロ）</button>
+          <button class="active">1ヶ月以下</button>
+          <button>2ヶ月以下</button>
+          <button>制限なし</button>
+        </div>
+      </div>
+      <div class="filter-item">
+        <label style="display:flex; align-items:center; gap:6px; font-size:11px; cursor:pointer;">
+          <input type="checkbox">
+          <span style="font-weight:500; color:#7e22ce;">敷金・礼金ともに0（敷礼ゼロ物件）</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- クイック築年（よく使う絞り込み） -->
+    <div class="filter-section" style="background: #f0f9ff; margin: 4px -12px; padding: 10px 16px 12px; border-top: 1px solid #93c5fd; border-bottom: 1px solid #93c5fd;">
+      <div class="filter-title" style="color: #1e40af;">
+        築年数
+        <span style="background:#3b82f6; color:white; font-size:10px; padding:1px 6px; border-radius:3px; font-weight:500; margin-left:4px;">よく使う</span>
+      </div>
+      <div class="filter-item">
+        <div class="filter-item-label">クイック選択</div>
+        <div class="btn-group">
+          <button>5年以内</button>
+          <button>10年以内</button>
+          <button class="active">20年以内</button>
+          <button>30年以内</button>
+          <button>制限なし</button>
+        </div>
+      </div>
+      <div class="filter-item">
+        <div class="filter-item-label">細かく指定</div>
+        <div class="slider-row">
+          <input type="number" placeholder="0">
+          <span>〜</span>
+          <input type="number" value="20">
+          <span class="unit">年</span>
+        </div>
+        <div class="slider-track" style="margin-top:4px;">
+          <div class="slider-fill" style="left:0; width:40%; background:#3b82f6;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ③ 物件スペック -->
+    <div class="filter-section">
+      <div class="filter-title"><span class="num">3</span>物件スペック</div>
+      <div class="filter-item">
+        <div class="filter-item-label">専有面積（㎡）</div>
+        <div class="slider-row">
+          <input type="number" value="40">
+          <span>〜</span>
+          <input type="number" placeholder="-">
+          <span class="unit">㎡</span>
+        </div>
+        <div class="slider-track" style="margin-top:4px;">
+          <div class="slider-fill" style="left:25%; width:75%;"></div>
+        </div>
+      </div>
+      <div class="filter-item">
+        <div class="filter-item-label">間取り</div>
+        <div class="btn-group">
+          <button>1R</button>
+          <button>1K</button>
+          <button>1DK</button>
+          <button class="active">1LDK</button>
+          <button>2K</button>
+          <button>2DK</button>
+          <button class="active">2LDK</button>
+          <button>3K</button>
+          <button>3DK</button>
+          <button>3LDK</button>
+          <button>4LDK以上</button>
+        </div>
+      </div>
+      <div class="filter-item">
+        <div class="filter-item-label">所在階</div>
+        <div class="slider-row">
+          <input type="number" placeholder="-">
+          <span>〜</span>
+          <input type="number" placeholder="-">
+          <span class="unit">階</span>
+        </div>
+      </div>
+      <div class="filter-item">
+        <div class="filter-item-label">総階数（最低）</div>
+        <div class="slider-row">
+          <input type="number" placeholder="-">
+          <span class="unit">階以上</span>
+        </div>
+      </div>
+      <div class="filter-item">
+        <div class="filter-item-label">構造</div>
+        <div class="btn-group">
+          <button class="active">RC</button>
+          <button class="active">SRC</button>
+          <button>木造</button>
+          <button>鉄骨</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ④ HIT独自軸 -->
+    <div class="filter-section hit-axis">
+      <div class="filter-title"><span class="num">4</span>HIT独自軸</div>
+      <div class="filter-item">
+        <div class="filter-item-label">在庫日数（日）</div>
+        <div class="slider-row">
+          <input type="number" value="60">
+          <span>〜</span>
+          <input type="number" placeholder="-">
+          <span class="unit">日</span>
+        </div>
+        <div class="slider-track" style="margin-top:4px;">
+          <div class="slider-fill" style="left:20%; width:80%;"></div>
+        </div>
+      </div>
+      <div class="filter-item">
+        <div class="filter-item-label">賃料変更回数（最低）</div>
+        <div class="slider-row">
+          <input type="number" value="1">
+          <span class="unit">回以上</span>
+        </div>
+        <div class="slider-track" style="margin-top:4px;">
+          <div class="slider-fill" style="left:0; width:30%;"></div>
+        </div>
+      </div>
+      <div class="filter-item">
+        <label style="display:flex; align-items:center; gap:6px; font-size:11px; cursor:pointer;">
+          <input type="checkbox" checked>
+          <span>同建物に他に募集中部屋あり</span>
+        </label>
+      </div>
+      <div class="review-comment-box">
+        この「HIT独自軸」が他社（SUUMO・楽待）にない切り口です。他に追加したい指標があればお知らせください。
+      </div>
+    </div>
+
+    <!-- ⑥ こだわり条件 -->
+    <div class="filter-section">
+      <div class="filter-title"><span class="num">6</span>こだわり条件</div>
+      <div class="check-list">
+        <label><input type="checkbox" checked>エレベーター</label>
+        <label><input type="checkbox" checked>オートロック</label>
+        <label><input type="checkbox">宅配ボックス</label>
+        <label><input type="checkbox">24時間ゴミ出し</label>
+        <label><input type="checkbox">管理人常駐</label>
+        <label><input type="checkbox">管理人24h対応</label>
+        <label><input type="checkbox">駐車場あり</label>
+        <label><input type="checkbox">平置き駐車場</label>
+        <label><input type="checkbox">機械式駐車場</label>
+        <label><input type="checkbox">フロントサービス</label>
+        <label><input type="checkbox">防犯カメラ</label>
+        <label><input type="checkbox">セキュリティ会社</label>
+        <label><input type="checkbox">免震</label>
+        <label><input type="checkbox">耐震</label>
+        <label><input type="checkbox">制震</label>
+        <label><input type="checkbox">タイル貼り</label>
+        <label><input type="checkbox">外断熱</label>
+        <label><input type="checkbox">耐震認定</label>
+        <label><input type="checkbox">長期優良住宅</label>
+        <label><input type="checkbox">低炭素</label>
+        <label><input type="checkbox">BELS</label>
+        <label><input type="checkbox">性能評価書</label>
+      </div>
+    </div>
+
+    <!-- ⑦ 取引条件 -->
+    <div class="filter-section">
+      <div class="filter-title"><span class="num">7</span>取引条件</div>
+      <div class="filter-item">
+        <div class="filter-item-label">取引態様</div>
+        <div class="btn-group">
+          <button>専属</button>
+          <button>専任</button>
+          <button>一般</button>
+        </div>
+      </div>
+      <div class="filter-item">
+        <div class="filter-item-label">用途地域（複数選択可）</div>
+        <input type="text" class="text-input" placeholder="例: 第1種住居、近隣商業">
+      </div>
+      <div class="filter-item">
+        <div class="filter-item-label">建蔽率（最大）</div>
+        <div class="slider-row">
+          <input type="number" placeholder="-">
+          <span class="unit">% 以下</span>
+        </div>
+      </div>
+      <div class="filter-item">
+        <div class="filter-item-label">容積率（最大）</div>
+        <div class="slider-row">
+          <input type="number" placeholder="-">
+          <span class="unit">% 以下</span>
+        </div>
+      </div>
+      <div class="filter-item">
+        <div class="filter-item-label">土地権利</div>
+        <div class="btn-group">
+          <button class="active">所有権</button>
+          <button>借地</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- レビュー側注 -->
+    <div class="side-review-note">
+      <strong>📝 平沢さん・藤原さんへ</strong>
+      上記フィルタ <strong>★物件ステータス＋★データ期間＋①〜⑦の計9セクション</strong>の中で、<br>
+      ・<strong>不要な項目</strong>（普段使わない）<br>
+      ・<strong>追加したい項目</strong>（他にこれが見たい）<br>
+      ・<strong>並び順を変えたい項目</strong><br>
+      があれば、何でもお知らせください。実装は可能なものがほとんどです。
+    </div>
+
+  </aside>
+
+  <!-- ===================== 結果エリア ===================== -->
+  <section class="result-area">
+    <!-- 集計サマリーバー（HIT差別化機能） -->
+    <div style="background: #fef3c7; border-bottom: 2px solid #f59e0b; padding: 10px 16px; font-size: 11px;">
+      <div class="period-summary-bar" id="period-summary-bar">
+        <span class="label">📅 集計期間：</span>
+        <span id="period-display">全期間（2015/01/01 〜 2026/05/01）</span>
+      </div>
+      <div style="display: flex; gap: 18px; align-items: center; flex-wrap: wrap;">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span style="background:#f59e0b; color:white; font-size:10px; padding:2px 6px; border-radius:3px; font-weight:600;">★ HIT</span>
+          <span style="color:#78350f; font-weight:600; font-size:12px;">絞り込み条件下の家賃相場サマリー</span>
+        </div>
+        <div style="border-left: 1px solid #f59e0b; padding-left:14px;">
+          <span style="color:#78350f;">該当件数</span>
+          <strong style="color:#92400e; font-size:15px; margin-left:4px;">14</strong>
+          <span style="color:#92400e; font-size:11px;"> 件</span>
+        </div>
+        <div style="border-left: 1px solid #f59e0b; padding-left:14px;">
+          <span style="color:#78350f;">平均賃料</span>
+          <span style="background:#6b7280; color:white; font-size:9px; padding:0 4px; border-radius:2px; margin-left:2px;">単純</span>
+          <strong style="color:#92400e; font-size:15px; margin-left:4px;">16.7</strong>
+          <span style="color:#92400e; font-size:11px;"> 万円/月</span>
+        </div>
+        <div style="border-left: 1px solid #f59e0b; padding-left:14px;">
+          <span style="color:#78350f;">中央値</span>
+          <strong style="color:#92400e; font-size:15px; margin-left:4px;">13.5</strong>
+          <span style="color:#92400e; font-size:11px;"> 万円/月</span>
+        </div>
+        <div style="border-left: 1px solid #f59e0b; padding-left:14px;">
+          <span style="color:#78350f;">平均賃料単価</span>
+          <span style="background:#92400e; color:white; font-size:9px; padding:0 4px; border-radius:2px; margin-left:2px;">加重</span>
+          <strong style="color:#92400e; font-size:15px; margin-left:4px;">2,867</strong>
+          <span style="color:#92400e; font-size:11px;"> 円/㎡</span>
+        </div>
+        <div style="border-left: 1px solid #f59e0b; padding-left:14px;">
+          <span style="color:#78350f;">中央値（単価）</span>
+          <strong style="color:#92400e; font-size:15px; margin-left:4px;">2,565</strong>
+          <span style="color:#92400e; font-size:11px;"> 円/㎡</span>
+        </div>
+      </div>
+      <div style="display:flex; justify-content:space-between; margin-top:6px; padding-top:6px; border-top:1px dashed #f59e0b; font-size:10px; color:#78350f;">
+        <div><strong>計算方式：</strong> <span style="background:#92400e; color:white; padding:0 4px; border-radius:2px;">加重</span> 加重平均 SUM(chingyo)/SUM(senyu_area) ・ <span style="background:#6b7280; color:white; padding:0 4px; border-radius:2px;">単純</span> 単純平均 AVG ・ 中央値 50パーセンタイル</div>
+        <div>💡 <strong>収益物件の利回り計算で活用</strong>：エリア・面積・築年・駅距離など条件を絞ると、その条件下の家賃相場が即座に分かります</div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="results" style="width:1700px;">
+        <colgroup>
+          <col style="width:130px"><col style="width:80px"><col style="width:60px"><col style="width:80px"><col style="width:70px">
+          <col style="width:100px"><col style="width:40px"><col style="width:180px">
+          <col style="width:80px"><col style="width:75px"><col style="width:65px"><col style="width:45px"><col style="width:45px">
+          <col style="width:60px"><col style="width:60px">
+          <col style="width:40px"><col style="width:40px"><col style="width:50px"><col style="width:50px">
+          <col style="width:40px"><col style="width:40px"><col style="width:40px"><col style="width:40px">
+          <col style="width:40px"><col style="width:40px"><col style="width:60px"><col style="width:50px">
+          <col style="width:80px"><col style="width:50px">
+        </colgroup>
+        <thead>
+          <tr>
+            <th>物件番号</th>
+            <th title="在庫・変更=登録日／推定成約=消失検出日／成約=成約日">登録日</th>
+            <th>区</th>
+            <th>町丁目</th>
+            <th>全住所</th>
+            <th>最寄駅</th>
+            <th class="right">徒歩(分)</th>
+            <th>建物名</th>
+            <th class="right">賃料<br>(万円/月)</th>
+            <th class="right">賃料単価<br>(円/㎡)</th>
+            <th class="right">管理費<br>(円/月)</th>
+            <th class="right">敷金<br>(月)</th>
+            <th class="right">礼金<br>(月)</th>
+            <th class="right">面積<br>(㎡)</th>
+            <th>間取り</th>
+            <th class="right">階</th>
+            <th class="right">総階</th>
+            <th class="right">築年</th>
+            <th>構造</th>
+            <th class="center" title="エレベーター">EV</th>
+            <th class="center" title="オートロック">AL</th>
+            <th class="center" title="宅配ボックス">宅</th>
+            <th class="center" title="24時間ゴミ出し">24h</th>
+            <th class="center" title="駐車場">P</th>
+            <th class="center" title="管理人">管</th>
+            <th class="right hit">在庫<br>(日)</th>
+            <th class="center hit">賃料<br>変更</th>
+            <th>取引</th>
+            <th class="center">Link</th>
+          </tr>
+        </thead>
+        <tbody id="result-tbody">
+          <!-- ダミーデータはJSで挿入 -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</div>
+
+<!-- ============================================================ -->
+<!-- ============= モーダル（詳細画面） ============= -->
+<!-- ============================================================ -->
+<div class="modal-backdrop" id="modal-backdrop">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div class="modal-title">
+        <span class="id" id="modal-id">100137642385</span>
+        <span id="modal-bldg">西新宿マンションABC</span>
+      </div>
+      <div class="modal-controls">
+        <button onclick="navProperty(-1)">← 前</button>
+        <button onclick="navProperty(1)">次 →</button>
+        <span style="font-size:10px; color:#9ca3af; margin: 0 4px;">（←→キー / ESCで閉じる）</span>
+        <button class="modal-close" onclick="closeModal()">×</button>
+      </div>
+    </div>
+    <div class="modal-body" id="modal-body">
+      <!-- モーダル内容はJSで描画 -->
+    </div>
+  </div>
+</div>
+
+<!-- ホバーツールチップ -->
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+// ============================================================
+// ダミーデータ（賃貸版）
+// ============================================================
+const properties = [
+  {
+    id: "200137642385", ward: "新宿", chome: "西新宿2",
+    address: "東京都新宿区西新宿2-3-15", station: "西新宿駅", walk: 8,
+    bldg: "西新宿マンションABCタワー", chingyo: 18.5, chingyo_per_sqm: 3094, kanri: 18000, shiki: 1.0, rei: 1.0,
+    area: 59.8, madori: "2LDK", floor: 12, totalFloor: 25, age: 12, kozo: "RC",
+    ev: 1, al: 1, takuhai: 1, gomi: 1, parking: 1, kanrinin: 1,
+    inv: 142, drop: 2, torihiki: "専任",
+    prop_status: "henko",
+    reg_date: "2025-08-15",
+    rent_history: [
+      { date: "2024-08-10", price: 20.5, status: "新規登録" },
+      { date: "2024-12-22", price: 19.5, status: "賃料変更" },
+      { date: "2025-08-15", price: 18.5, status: "賃料変更" }
+    ],
+    rooms: [
+      { room: "601", floor: 6, area: 58.2, madori: "2LDK", chingyo: 17.8, ai: 17.5, kakaku: null },
+      { room: "1502", floor: 15, area: 72.1, madori: "3LDK", chingyo: 24, ai: 22.5, kakaku: null },
+      { room: "2003", floor: 20, area: 60.5, madori: "2LDK", chingyo: null, ai: 19.5, kakaku: 6800 }
+    ]
+  },
+  {
+    id: "200138421907", ward: "渋谷", chome: "恵比寿1",
+    address: "東京都渋谷区恵比寿1-22-8", station: "恵比寿駅", walk: 6,
+    bldg: "恵比寿レジデンスマーク", chingyo: 22.0, chingyo_per_sqm: 3548, kanri: 20000, shiki: 1.0, rei: 1.0,
+    area: 62.0, madori: "2LDK", floor: 8, totalFloor: 14, age: 8, kozo: "RC",
+    ev: 1, al: 1, takuhai: 1, gomi: 1, parking: 0, kanrinin: 0,
+    inv: 98, drop: 0, torihiki: "専属",
+    prop_status: "zaiko",
+    reg_date: "2026-04-10"
+  },
+  {
+    id: "200139002445", ward: "新宿", chome: "高田馬場3",
+    address: "東京都新宿区高田馬場3-15-2", station: "高田馬場駅", walk: 4,
+    bldg: "馬場タワーレジデンス", chingyo: 12.5, chingyo_per_sqm: 2577, kanri: 8000, shiki: 1.0, rei: 0,
+    area: 48.5, madori: "1LDK", floor: 11, totalFloor: 18, age: 15, kozo: "SRC",
+    ev: 1, al: 1, takuhai: 1, gomi: 0, parking: 0, kanrinin: 1,
+    inv: 85, drop: 0, torihiki: "一般",
+    prop_status: "zaiko",
+    reg_date: "2026-04-22"
+  },
+  {
+    id: "200139558210", ward: "中央", chome: "日本橋3",
+    address: "東京都中央区日本橋3-7-12", station: "日本橋駅", walk: 3,
+    bldg: "日本橋プレミアムレジデンスタワーEAST", chingyo: 28.0, chingyo_per_sqm: 4167, kanri: 25000, shiki: 2.0, rei: 1.0,
+    area: 67.2, madori: "3LDK", floor: 18, totalFloor: 32, age: 5, kozo: "RC",
+    ev: 1, al: 1, takuhai: 1, gomi: 1, parking: 1, kanrinin: 1,
+    inv: 42, drop: 0, torihiki: "専属",
+    prop_status: "zaiko",
+    reg_date: "2025-11-22"
+  },
+  {
+    id: "200140112733", ward: "墨田", chome: "押上1",
+    address: "東京都墨田区押上1-14-6", station: "押上駅", walk: 9,
+    bldg: "押上レジデンスXY", chingyo: 11.5, chingyo_per_sqm: 2195, kanri: 7000, shiki: 0, rei: 0,
+    area: 52.4, madori: "2LDK", floor: 6, totalFloor: 12, age: 18, kozo: "RC",
+    ev: 1, al: 1, takuhai: 0, gomi: 0, parking: 0, kanrinin: 0,
+    inv: 215, drop: 3, torihiki: "一般",
+    prop_status: "henko",
+    reg_date: "2025-09-30"
+  },
+  {
+    id: "200140889551", ward: "台東", chome: "浅草3",
+    address: "東京都台東区浅草3-22-1", station: "浅草駅", walk: 7,
+    bldg: "浅草フラッグスシティ", chingyo: 14.5, chingyo_per_sqm: 2553, kanri: 10000, shiki: 1.0, rei: 1.0,
+    area: 56.8, madori: "2LDK", floor: 9, totalFloor: 16, age: 11, kozo: "RC",
+    ev: 1, al: 1, takuhai: 1, gomi: 1, parking: 0, kanrinin: 0,
+    inv: 178, drop: 2, torihiki: "専任",
+    prop_status: "henko",
+    reg_date: "2026-02-12"
+  },
+  {
+    id: "200141298612", ward: "杉並", chome: "高円寺南2",
+    address: "東京都杉並区高円寺南2-44-12", station: "高円寺駅", walk: 6,
+    bldg: "高円寺ガーデンヒルズ", chingyo: 11.8, chingyo_per_sqm: 2305, kanri: 6000, shiki: 1.0, rei: 0,
+    area: 51.2, madori: "1LDK", floor: 4, totalFloor: 8, age: 22, kozo: "RC",
+    ev: 1, al: 1, takuhai: 0, gomi: 0, parking: 1, kanrinin: 0,
+    inv: 132, drop: 0, torihiki: "一般",
+    prop_status: "suiteijoyaku",
+    reg_date: "2026-04-25"
+  },
+  {
+    id: "200141520988", ward: "杉並", chome: "阿佐ヶ谷北4",
+    address: "東京都杉並区阿佐ヶ谷北4", station: "阿佐ヶ谷駅", walk: 9,
+    bldg: null,
+    chingyo: 9.8, chingyo_per_sqm: 1968, kanri: 5000, shiki: 1.0, rei: 0,
+    area: 49.8, madori: "1LDK", floor: 3, totalFloor: null, age: 32, kozo: null,
+    ev: null, al: null, takuhai: null, gomi: null, parking: null, kanrinin: null,
+    inv: 158, drop: 0, torihiki: "一般",
+    prop_status: "suiteijoyaku",
+    reg_date: "2026-04-28"
+  },
+  {
+    id: "200141771044", ward: "中野", chome: "中野5",
+    address: "東京都中野区中野5-66-3", station: "中野駅", walk: 5,
+    bldg: "中野セントラルレジデンス", chingyo: 19.5, chingyo_per_sqm: 3047, kanri: 15000, shiki: 1.0, rei: 1.0,
+    area: 64.0, madori: "2LDK", floor: 14, totalFloor: 22, age: 7, kozo: "RC",
+    ev: 1, al: 1, takuhai: 1, gomi: 1, parking: 1, kanrinin: 1,
+    inv: 35, drop: 0, torihiki: "専属",
+    prop_status: "zaiko",
+    reg_date: "2025-12-15"
+  },
+  {
+    id: "200142156738", ward: "練馬", chome: "練馬1",
+    address: "東京都練馬区練馬1-17-9", station: "練馬駅", walk: 8,
+    bldg: "練馬プラザマンション", chingyo: 9.2, chingyo_per_sqm: 1688, kanri: 4500, shiki: 0, rei: 0,
+    area: 54.5, madori: "2LDK", floor: 3, totalFloor: 7, age: 25, kozo: "RC",
+    ev: 1, al: 0, takuhai: 0, gomi: 0, parking: 1, kanrinin: 0,
+    inv: 268, drop: 4, torihiki: "一般",
+    prop_status: "henko",
+    reg_date: "2024-03-05"
+  },
+  {
+    id: "200142554821", ward: "葛飾", chome: "立石4",
+    address: "東京都葛飾区立石4-32-5", station: "京成立石駅", walk: 10,
+    bldg: "立石コートプラザ", chingyo: 8.5, chingyo_per_sqm: 1466, kanri: 4000, shiki: 1.0, rei: 0,
+    area: 58.0, madori: "2LDK", floor: 5, totalFloor: 10, age: 28, kozo: "SRC",
+    ev: 1, al: 0, takuhai: 0, gomi: 0, parking: 0, kanrinin: 0,
+    inv: 195, drop: 2, torihiki: "一般",
+    prop_status: "henko",
+    reg_date: "2025-10-30"
+  },
+  {
+    id: "200143002615", ward: "新宿", chome: "新宿7",
+    address: "東京都新宿区新宿7-26-11", station: "新宿三丁目駅", walk: 7,
+    bldg: "新宿ステーションスクエア", chingyo: 25.5, chingyo_per_sqm: 3899, kanri: 22000, shiki: 2.0, rei: 1.0,
+    area: 65.4, madori: "2LDK", floor: 16, totalFloor: 28, age: 4, kozo: "RC",
+    ev: 1, al: 1, takuhai: 1, gomi: 1, parking: 1, kanrinin: 1,
+    inv: 28, drop: 0, torihiki: "専属",
+    prop_status: "zaiko",
+    reg_date: "2026-04-15"
+  },
+  {
+    id: "200143489022", ward: "渋谷", chome: "代々木1",
+    address: "東京都渋谷区代々木1-44-8", station: "代々木駅", walk: 5,
+    bldg: "代々木ザ・タワー", chingyo: 35.0, chingyo_per_sqm: 4944, kanri: 30000, shiki: 2.0, rei: 1.0,
+    area: 70.8, madori: "3LDK", floor: 22, totalFloor: 38, age: 3, kozo: "RC",
+    ev: 1, al: 1, takuhai: 1, gomi: 1, parking: 1, kanrinin: 1,
+    inv: 18, drop: 0, torihiki: "専属",
+    prop_status: "zaiko",
+    reg_date: "2025-07-08"
+  },
+  {
+    id: "200143820411", ward: "中野", chome: "鷺宮3",
+    address: "東京都中野区鷺宮3", station: "鷺ノ宮駅", walk: 11,
+    bldg: null,
+    chingyo: 7.5, chingyo_per_sqm: 1364, kanri: 3000, shiki: 0, rei: 0,
+    area: 55.0, madori: "2DK", floor: 2, totalFloor: null, age: 38, kozo: null,
+    ev: null, al: null, takuhai: null, gomi: null, parking: null, kanrinin: null,
+    inv: 305, drop: 4, torihiki: "一般",
+    prop_status: "joyaku",
+    reg_date: "2024-12-10"
+  }
+];
+
+// ============================================================
+// テーブル描画
+// ============================================================
+function attrCell(val, code) {
+  const map = {ev:"EV", al:"AL", takuhai:"宅", gomi:"24h", parking:"P", kanrinin:"管"};
+  if (val === 1) return `<span class="bldg-attr on">${map[code]}</span>`;
+  if (val === 0) return `<span class="bldg-attr off">${map[code]}</span>`;
+  return `<span class="bldg-attr null">　</span>`;
+}
+
+function fmtNum(n) {
+  return n == null ? "-" : n.toLocaleString();
+}
+
+function updatePeriodLabel() {
+  const sel = document.getElementById("period-select");
+  const fromYearSel = document.getElementById("period-from-year");
+  const toYearSel = document.getElementById("period-to-year");
+  const display = document.getElementById("period-display");
+  if (!sel || !display) return;
+  const today = new Date(2026, 4, 1);
+  const fmt = d => `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
+  let label, from, to;
+  if (sel.value === "custom") {
+    const fy = parseInt(fromYearSel.value); const ty = parseInt(toYearSel.value);
+    from = new Date(fy, 0, 1); to = new Date(ty, 11, 31);
+    label = `${fy}年〜${ty}年（カスタム範囲）`;
+  } else {
+    const map = {
+      all: { label: "全期間", from: new Date(2015, 0, 1), to: today },
+      last_1y: { label: "直近1年", from: new Date(2025, 4, 1), to: today },
+      last_3y: { label: "直近3年", from: new Date(2023, 4, 1), to: today },
+      cy2026: { label: "2026年", from: new Date(2026, 0, 1), to: new Date(2026, 11, 31) },
+      cy2025: { label: "2025年", from: new Date(2025, 0, 1), to: new Date(2025, 11, 31) },
+      cy2024: { label: "2024年", from: new Date(2024, 0, 1), to: new Date(2024, 11, 31) },
+      cy2023: { label: "2023年", from: new Date(2023, 0, 1), to: new Date(2023, 11, 31) },
+      cy2022: { label: "2022年", from: new Date(2022, 0, 1), to: new Date(2022, 11, 31) },
+      cy2021: { label: "2021年", from: new Date(2021, 0, 1), to: new Date(2021, 11, 31) },
+      cy2020: { label: "2020年", from: new Date(2020, 0, 1), to: new Date(2020, 11, 31) }
+    };
+    const cfg = map[sel.value]; label = cfg.label; from = cfg.from; to = cfg.to;
+  }
+  display.textContent = `${label}(${fmt(from)} 〜 ${fmt(to)})`;
+}
+function onPeriodPresetChange() {
+  const sel = document.getElementById("period-select");
+  const fromYearSel = document.getElementById("period-from-year");
+  const toYearSel = document.getElementById("period-to-year");
+  if (sel.value !== "custom") {
+    const presetMap = {
+      all: { fy: 2015, ty: 2026 }, last_1y: { fy: 2025, ty: 2026 }, last_3y: { fy: 2023, ty: 2026 },
+      cy2026: { fy: 2026, ty: 2026 }, cy2025: { fy: 2025, ty: 2025 }, cy2024: { fy: 2024, ty: 2024 },
+      cy2023: { fy: 2023, ty: 2023 }, cy2022: { fy: 2022, ty: 2022 }, cy2021: { fy: 2021, ty: 2021 },
+      cy2020: { fy: 2020, ty: 2020 }
+    };
+    const p = presetMap[sel.value];
+    if (p) { fromYearSel.value = String(p.fy); toYearSel.value = String(p.ty); }
+  }
+  updatePeriodLabel();
+}
+function onPeriodCustomChange() {
+  const sel = document.getElementById("period-select");
+  const fromYearSel = document.getElementById("period-from-year");
+  const toYearSel = document.getElementById("period-to-year");
+  if (parseInt(fromYearSel.value) > parseInt(toYearSel.value)) toYearSel.value = fromYearSel.value;
+  sel.value = "custom";
+  updatePeriodLabel();
+}
+
+function statusBadge(s) {
+  const map = {
+    zaiko: { label: "在庫", class: "status-zaiko" },
+    henko: { label: "変更", class: "status-henko" },
+    suiteijoyaku: { label: "推定成約", class: "status-suiteijoyaku" },
+    joyaku: { label: "成約", class: "status-joyaku" }
+  };
+  const cfg = map[s];
+  if (!cfg) return "";
+  return `<span class="status-badge ${cfg.class}">${cfg.label}</span>`;
+}
+
+function renderTable() {
+  const tbody = document.getElementById("result-tbody");
+  tbody.innerHTML = properties.map((p, i) => `
+    <tr onclick="openModal(${i})" data-idx="${i}">
+      <td>${statusBadge(p.prop_status)}<span class="cell-id">${p.id}</span></td>
+      <td><span class="cell-date">${p.reg_date || '-'}</span></td>
+      <td>${p.ward}</td>
+      <td>${p.chome}</td>
+      <td>${p.bldg ? `<span class="cell-addr" data-tip="${p.address}">全住所</span>` : `<span style="color:#9ca3af; font-style:italic;">(取得不可)</span>`}</td>
+      <td>${p.station}</td>
+      <td class="right">${p.walk}</td>
+      <td>${p.bldg ? `<span class="cell-bldg-name" data-tip="${p.bldg}">${truncate(p.bldg, 12)}</span>` : `<span style="color:#9ca3af; font-style:italic;">(建物名なし)</span>`}</td>
+      <td class="right" style="font-weight:600;">${p.chingyo.toFixed(1)}</td>
+      <td class="right">${p.chingyo_per_sqm.toLocaleString()}</td>
+      <td class="right">${p.kanri.toLocaleString()}</td>
+      <td class="right">${p.shiki === 0 ? `<span style="background:#dcfce7; color:#166534; padding:1px 4px; border-radius:2px; font-weight:600;">0</span>` : p.shiki.toFixed(1)}</td>
+      <td class="right">${p.rei === 0 ? `<span style="background:#dcfce7; color:#166534; padding:1px 4px; border-radius:2px; font-weight:600;">0</span>` : p.rei.toFixed(1)}</td>
+      <td class="right">${p.area.toFixed(1)}</td>
+      <td>${p.madori}</td>
+      <td class="right">${p.floor}F</td>
+      <td class="right">${p.totalFloor != null ? p.totalFloor + 'F' : '-'}</td>
+      <td class="right">${p.age}年</td>
+      <td>${p.kozo || '-'}</td>
+      <td class="center">${attrCell(p.ev, "ev")}</td>
+      <td class="center">${attrCell(p.al, "al")}</td>
+      <td class="center">${attrCell(p.takuhai, "takuhai")}</td>
+      <td class="center">${attrCell(p.gomi, "gomi")}</td>
+      <td class="center">${attrCell(p.parking, "parking")}</td>
+      <td class="center">${attrCell(p.kanrinin, "kanrinin")}</td>
+      <td class="right hit hit-strong">${p.inv}</td>
+      <td class="center hit hit-strong">${p.drop}</td>
+      <td>${p.torihiki}</td>
+      <td class="center"><a href="#" class="cell-link" onclick="event.stopPropagation()">Link</a></td>
+    </tr>
+  `).join("");
+  document.getElementById("result-count").textContent = properties.length;
+  attachTooltips();
+}
+
+function truncate(s, n) {
+  return s.length > n ? s.substring(0, n) + "…" : s;
+}
+
+// ============================================================
+// ホバーツールチップ
+// ============================================================
+function attachTooltips() {
+  const tip = document.getElementById("tooltip");
+  document.querySelectorAll("[data-tip]").forEach(el => {
+    el.addEventListener("mouseenter", (e) => {
+      tip.textContent = el.dataset.tip;
+      tip.classList.add("show");
+      const rect = el.getBoundingClientRect();
+      tip.style.left = (rect.left) + "px";
+      tip.style.top = (rect.bottom + 4) + "px";
+    });
+    el.addEventListener("mouseleave", () => {
+      tip.classList.remove("show");
+    });
+  });
+}
+
+// ============================================================
+// モーダル
+// ============================================================
+let currentIdx = 0;
+
+function openModal(idx) {
+  currentIdx = idx;
+  renderModal();
+  document.getElementById("modal-backdrop").classList.add("show");
+}
+
+function closeModal() {
+  document.getElementById("modal-backdrop").classList.remove("show");
+}
+
+function navProperty(delta) {
+  currentIdx = (currentIdx + delta + properties.length) % properties.length;
+  renderModal();
+}
+
+function renderModal() {
+  const p = properties[currentIdx];
+  document.getElementById("modal-id").textContent = p.id;
+  document.getElementById("modal-bldg").textContent = p.bldg || "(建物名取得不可：building_master 未マッチ)";
+
+  // サンプル詳細：物件0番のリッチデータをベースに、他物件は基本情報のみ
+  const useDetailed = currentIdx === 0;
+
+  document.getElementById("modal-body").innerHTML = `
+    <!-- A: 物件基本情報 -->
+    <div class="modal-section">
+      <div class="modal-section-header">
+        <span class="badge">A</span> 物件基本情報
+      </div>
+      <div class="modal-section-body">
+        <div class="spec-grid">
+          <div class="spec-item"><span class="spec-label">物件番号</span><span class="spec-value">${p.id}</span></div>
+          <div class="spec-item"><span class="spec-label">物件ステータス</span><span class="spec-value">${statusBadge(p.prop_status)}<span style="color:#6b7280; font-size:10px; margin-left:4px;">${p.prop_status === "zaiko" ? "現役・賃料変更履歴なし" : p.prop_status === "henko" ? "現役・賃料変更履歴あり" : p.prop_status === "suiteijoyaku" ? "在庫から消失（入居決定推定）" : "REINS成約データに登録済み"}</span></span></div>
+          <div class="spec-item"><span class="spec-label">${p.prop_status === "joyaku" ? "成約日" : p.prop_status === "suiteijoyaku" ? "消失検出日" : "登録日"}</span><span class="spec-value">${p.reg_date || '-'}</span></div>
+          <div class="spec-item"><span class="spec-label">所在地</span><span class="spec-value">${p.address}</span></div>
+          <div class="spec-item"><span class="spec-label">最寄駅</span><span class="spec-value">${p.station} 徒歩${p.walk}分</span></div>
+          <div class="spec-item"><span class="spec-label">沿線</span><span class="spec-value">${useDetailed ? "東京メトロ丸ノ内線、JR山手線" : "（沿線情報）"}</span></div>
+          <div class="spec-item"><span class="spec-label">賃料</span><span class="spec-value" style="color:#b45309; font-weight:600;">${p.chingyo.toFixed(1)} 万円/月</span></div>
+          <div class="spec-item"><span class="spec-label">賃料単価</span><span class="spec-value">${p.chingyo_per_sqm.toLocaleString()} 円/㎡/月</span></div>
+          <div class="spec-item"><span class="spec-label">管理費</span><span class="spec-value">${p.kanri.toLocaleString()} 円/月</span></div>
+          <div class="spec-item"><span class="spec-label">敷金</span><span class="spec-value">${p.shiki === 0 ? '<span style="color:#166534; font-weight:600;">0ヶ月（敷金ゼロ）</span>' : p.shiki.toFixed(1) + ' ヶ月'}</span></div>
+          <div class="spec-item"><span class="spec-label">礼金</span><span class="spec-value">${p.rei === 0 ? '<span style="color:#166534; font-weight:600;">0ヶ月（礼金ゼロ）</span>' : p.rei.toFixed(1) + ' ヶ月'}</span></div>
+          <div class="spec-item"><span class="spec-label">専有面積</span><span class="spec-value">${p.area.toFixed(1)} ㎡</span></div>
+          <div class="spec-item"><span class="spec-label">間取り</span><span class="spec-value">${p.madori}</span></div>
+          <div class="spec-item"><span class="spec-label">所在階 / 総階数</span><span class="spec-value">${p.floor}階 / ${p.totalFloor != null ? p.totalFloor + '階建' : '-'}</span></div>
+          <div class="spec-item"><span class="spec-label">向き</span><span class="spec-value">${useDetailed ? "南東向き" : "（向き情報）"}</span></div>
+          <div class="spec-item"><span class="spec-label">築年</span><span class="spec-value">${p.age}年（${2026 - p.age}年築）</span></div>
+          <div class="spec-item"><span class="spec-label">構造</span><span class="spec-value">${p.kozo ? p.kozo + '造' : '-'}</span></div>
+          <div class="spec-item"><span class="spec-label">総戸数</span><span class="spec-value">${useDetailed ? "180戸" : "-"}</span></div>
+          <div class="spec-item"><span class="spec-label">取引態様</span><span class="spec-value">${p.torihiki}</span></div>
+          <div class="spec-item"><span class="spec-label">ペット可</span><span class="spec-value">${useDetailed ? "可（小型犬1匹まで）" : "（要確認）"}</span></div>
+          <div class="spec-item"><span class="spec-label">バルコニー面積</span><span class="spec-value">${useDetailed ? "8.5 ㎡" : "-"}</span></div>
+          <div class="spec-item"><span class="spec-label">用途地域</span><span class="spec-value">${useDetailed ? "商業地域" : "-"}</span></div>
+          <div class="spec-item"><span class="spec-label">管理形態</span><span class="spec-value">${useDetailed ? "全部委託" : "-"}</span></div>
+          <div class="spec-item"><span class="spec-label">管理会社</span><span class="spec-value">${useDetailed ? "○○総合管理" : "-"}</span></div>
+        </div>
+        <div class="spacer"></div>
+        <div style="font-size:10px; color:#6b7280; padding-top:4px; border-top:1px dashed #e5e7eb;">
+          <strong style="color:#1f2937;">設備：</strong>
+          <span class="tag green">EV</span>
+          <span class="tag green">オートロック</span>
+          <span class="tag green">宅配BOX</span>
+          <span class="tag green">24hゴミ出し</span>
+          <span class="tag green">機械式P</span>
+          <span class="tag green">防犯カメラ</span>
+          <span class="tag green">セキュリティ会社</span>
+          <span class="tag gray">制震</span>
+          <span class="tag gray">タイル貼り</span>
+        </div>
+        <div class="review-comment-box">
+          このスペック表に表示する項目（追加 / 削除 / 並び順）はカスタマイズ可能です。
+        </div>
+      </div>
+    </div>
+
+    <!-- B: 建物履歴 -->
+    <div class="modal-section">
+      <div class="modal-section-header">
+        <span class="badge">B</span> 建物履歴（同建物の過去掲載）
+      </div>
+      <div class="modal-section-body">
+        <div class="subtable-tabs">
+          <button class="active" onclick="switchSubtab(this, 'rent')">賃貸履歴</button>
+          <button onclick="switchSubtab(this, 'sale')">売買履歴</button>
+          <button onclick="switchSubtab(this, 'tani')">賃料単価推移</button>
+        </div>
+        <div id="subtab-rent">
+          <table class="sub">
+            <thead>
+              <tr>
+                <th>掲載日</th>
+                <th>部屋番号</th>
+                <th>階</th>
+                <th class="right">面積(㎡)</th>
+                <th>間取</th>
+                <th class="right">賃料(万円/月)</th>
+                <th class="right">単価(円/㎡)</th>
+                <th>状態</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${useDetailed ? `
+                <tr><td>2025-09-12</td><td>1502</td><td>15</td><td class="right">72.1</td><td>3LDK</td><td class="right">23.5</td><td class="right">3,259</td><td><span class="tag blue">成約</span></td></tr>
+                <tr><td>2025-04-08</td><td>805</td><td>8</td><td class="right">58.5</td><td>2LDK</td><td class="right">17.8</td><td class="right">3,043</td><td><span class="tag blue">成約</span></td></tr>
+                <tr><td>2024-11-22</td><td>2003</td><td>20</td><td class="right">60.5</td><td>2LDK</td><td class="right">19.5</td><td class="right">3,223</td><td><span class="tag gray">取下</span></td></tr>
+                <tr><td>2024-06-15</td><td>402</td><td>4</td><td class="right">55.0</td><td>2LDK</td><td class="right">17.2</td><td class="right">3,127</td><td><span class="tag blue">成約</span></td></tr>
+                <tr><td>2023-12-03</td><td>1108</td><td>11</td><td class="right">62.0</td><td>2LDK</td><td class="right">18.5</td><td class="right">2,984</td><td><span class="tag blue">成約</span></td></tr>
+              ` : `
+                <tr><td colspan="8" style="text-align:center; color:#9ca3af; padding:24px;">同建物履歴データを取得中（HOMES rent_history からJOIN）</td></tr>
+              `}
+            </tbody>
+          </table>
+        </div>
+        <div class="review-comment-box">
+          賃貸履歴 / 売買履歴 / 賃料単価推移の3タブ。賃貸が主体で、売買は副、単価推移は折れ線でも可。
+        </div>
+      </div>
+    </div>
+
+    <!-- C: 同建物の現在募集中部屋 -->
+    <div class="modal-section">
+      <div class="modal-section-header hit">
+        <span class="badge">C</span> 同建物の現在募集中部屋
+        <span class="em-tag">★HIT差別化</span>
+      </div>
+      <div class="modal-section-body">
+        <table class="sub">
+          <thead>
+            <tr>
+              <th>部屋番号</th>
+              <th class="right">階</th>
+              <th class="right">専有面積(㎡)</th>
+              <th>間取り</th>
+              <th class="right">募集賃料(万円/月)</th>
+              <th class="right">AI予測賃料(万円/月)</th>
+              <th class="right">募集価格(万円・売買時)</th>
+              <th class="center">HOMESリンク</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${useDetailed ? p.rooms.map(r => `
+              <tr>
+                <td>${r.room}</td>
+                <td class="right">${r.floor}F</td>
+                <td class="right">${r.area.toFixed(1)}</td>
+                <td>${r.madori}</td>
+                <td class="right" style="font-weight:600; color:#b45309;">${r.chingyo ? r.chingyo.toFixed(1) : "-"}</td>
+                <td class="right">${r.ai.toFixed(1)}</td>
+                <td class="right">${r.kakaku ? fmtNum(r.kakaku) : "-"}</td>
+                <td class="center"><a href="#" class="cell-link" onclick="event.preventDefault()">Link</a></td>
+              </tr>
+            `).join("") : `<tr><td colspan="8" style="text-align:center; color:#9ca3af; padding:24px;">同建物募集中部屋データを取得中（homes_room_cards からJOIN）</td></tr>`}
+          </tbody>
+        </table>
+        <div style="margin-top:8px; font-size:11px; color:#374151; background:#fef9c3; padding:8px 12px; border-radius:4px; line-height:1.6;">
+          <strong style="color:#92400e;">💡 賃貸では特に重要</strong><br>
+          同建物の他の階・他の間取りで何円で募集中か、AI予測と実募集賃料の乖離はどうかが即座に分かる。これは <strong>売買仲介の利回り評価でも、家賃相場の根拠データ</strong> として使える。
+        </div>
+      </div>
+    </div>
+
+    <!-- D: 賃料変更履歴 -->
+    <div class="modal-section">
+      <div class="modal-section-header hit">
+        <span class="badge">D</span> 賃料変更履歴
+        <span class="em-tag">★HIT独自</span>
+      </div>
+      <div class="modal-section-body">
+        <table class="sub">
+          <thead>
+            <tr>
+              <th>変更日</th>
+              <th class="right">変更前賃料(万円/月)</th>
+              <th class="right">変更後賃料(万円/月)</th>
+              <th class="right">差額(万円)</th>
+              <th class="right">差額率(%)</th>
+              <th>状態</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${useDetailed && p.rent_history ? p.rent_history.slice(1).map((h, i) => {
+              const prev = p.rent_history[i].price;
+              const diff = h.price - prev;
+              const rate = (diff / prev * 100);
+              return `
+                <tr>
+                  <td>${h.date}</td>
+                  <td class="right">${prev.toFixed(1)}</td>
+                  <td class="right" style="font-weight:600;">${h.price.toFixed(1)}</td>
+                  <td class="right" style="color:${diff < 0 ? '#dc2626' : '#16a34a'}; font-weight:600;">${diff > 0 ? "+" : ""}${diff.toFixed(1)}</td>
+                  <td class="right" style="color:${rate < 0 ? '#dc2626' : '#16a34a'};">${rate.toFixed(2)}%</td>
+                  <td><span class="tag amber">${h.status}</span></td>
+                </tr>
+              `;
+            }).join("") : `<tr><td colspan="6" style="text-align:center; color:#9ca3af; padding:24px;">賃料変更履歴データを取得中（reins_rent_price_history）</td></tr>`}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- F: マップ -->
+    <div class="modal-section">
+      <div class="modal-section-header">
+        <span class="badge">F</span> 地図
+      </div>
+      <div class="modal-section-body">
+        <div style="font-size:11px; color:#6b7280; margin-bottom:6px;">${p.address}</div>
+        <div class="map-area">
+          <div class="map-pin"></div>
+          <span style="position:absolute; bottom:8px; right:8px; background:white; padding:2px 8px; font-size:10px; border-radius:3px; color:#6b7280;">Google Maps 埋め込み（実装時）</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- G: 担当業者情報 -->
+    <div class="modal-section">
+      <div class="modal-section-header">
+        <span class="badge">G</span> 担当業者情報
+      </div>
+      <div class="modal-section-body">
+        <div class="agent-warning">
+          ⚠️ REINS規約遵守：社内利用限定。お客様への提供・転載は不可。
+        </div>
+        <div class="agent-info">
+          <div class="spec-item"><span class="spec-label">取引態様</span><span class="spec-value">${p.torihiki}</span></div>
+          <div class="spec-item"><span class="spec-label">登録業者名</span><span class="spec-value">${useDetailed ? "○○不動産株式会社" : "-"}</span></div>
+          <div class="spec-item"><span class="spec-label">免許番号</span><span class="spec-value">${useDetailed ? "東京都知事(2)第00000号" : "-"}</span></div>
+          <div class="spec-item"><span class="spec-label">担当者</span><span class="spec-value">${useDetailed ? "山田太郎" : "-"}</span></div>
+          <div class="spec-item"><span class="spec-label">電話番号</span><span class="spec-value">${useDetailed ? "03-0000-0000" : "-"}</span></div>
+          <div class="spec-item"><span class="spec-label">FAX</span><span class="spec-value">${useDetailed ? "03-0000-0001" : "-"}</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- H: 賃料妥当性評価 -->
+    <div class="modal-section">
+      <div class="modal-section-header hit">
+        <span class="badge">H</span> 賃料妥当性評価
+        <span class="em-tag">★HIT差別化</span>
+      </div>
+      <div class="modal-section-body">
+        <div class="valuation-grid">
+          <div class="valuation-row this">
+            <div>この物件</div>
+            <div class="value">${p.chingyo_per_sqm.toLocaleString()} 円/㎡</div>
+            <div class="count">-</div>
+            <div class="delta">基準</div>
+          </div>
+          <div class="valuation-row">
+            <div class="label">同建物の賃料単価中央値</div>
+            <div class="value">${useDetailed ? "3,150" : Math.round(p.chingyo_per_sqm * 0.96).toLocaleString()} 円/㎡</div>
+            <div class="count">${useDetailed ? "8件" : "-"}</div>
+            <div class="delta ${p.chingyo_per_sqm > (useDetailed ? 3150 : p.chingyo_per_sqm * 0.96) ? 'high' : 'low'}">${useDetailed ? "-1.8%" : "+4.2%"} ${useDetailed ? "割安" : "割高"}</div>
+          </div>
+          <div class="valuation-row">
+            <div class="label">同区・同築年帯の中央値</div>
+            <div class="value">${useDetailed ? "3,050" : Math.round(p.chingyo_per_sqm * 0.92).toLocaleString()} 円/㎡</div>
+            <div class="count">${useDetailed ? "186件" : "-"}</div>
+            <div class="delta high">${useDetailed ? "+1.4%" : "+8.7%"} 割高</div>
+          </div>
+          <div class="valuation-row">
+            <div class="label">同区・同㎡帯・同間取の中央値</div>
+            <div class="value">${useDetailed ? "2,980" : Math.round(p.chingyo_per_sqm * 0.94).toLocaleString()} 円/㎡</div>
+            <div class="count">${useDetailed ? "324件" : "-"}</div>
+            <div class="delta high">${useDetailed ? "+3.8%" : "+6.4%"} 割高</div>
+          </div>
+        </div>
+        <div style="margin-top:10px; font-size:11px; color:#374151; background:#f0f9ff; padding:8px 12px; border-radius:4px; line-height:1.6;">
+          <strong style="color:#1e40af;">💡 売買仲介での投資判断にも直結</strong><br>
+          家賃相場が即座に分かるので、「この建物の表面利回りはX%が現実的」「想定家賃が高すぎる物件は要注意」など、<strong>売買仲介での価格妥当性評価の根拠</strong>として使えます。
+        </div>
+        <div class="review-comment-box">
+          比較軸（同建物・同区同築年・同区同㎡帯同間取）の他に必要な軸があればお知らせください。例：同沿線・同駅徒歩圏内など。
+        </div>
+      </div>
+    </div>
+
+    <!-- 全体の総括レビュー欄 -->
+    <div style="background:#dbeafe; border:1px solid #3b82f6; border-radius:6px; padding:12px 16px; margin-top:12px;">
+      <strong style="color:#1e3a8a; font-size:12px;">📌 詳細画面（モーダル）全体について</strong>
+      <ul style="font-size:11px; color:#1e40af; margin:6px 0 0 18px; line-height:1.7;">
+        <li>A〜H の<strong>セクションの順番を入れ替え</strong>たい場合はお知らせください</li>
+        <li><strong>不要なセクション</strong>があれば削除します</li>
+        <li><strong>追加したいセクション</strong>があれば実装可能です（例：写真ギャラリー、メモ機能、お気に入り登録、内見予約フォームなど）</li>
+        <li>1物件あたりの情報量が多すぎ／少なすぎなど、印象もぜひお聞かせください</li>
+      </ul>
+    </div>
+  `;
+}
+
+// ============================================================
+// その他
+// ============================================================
+function switchSubtab(btn, type) {
+  btn.parentElement.querySelectorAll("button").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  // 簡易実装：内容は固定
+}
+
+// ESCで閉じる、矢印で前後
+document.addEventListener("keydown", (e) => {
+  if (!document.getElementById("modal-backdrop").classList.contains("show")) return;
+  if (e.key === "Escape") closeModal();
+  if (e.key === "ArrowLeft") navProperty(-1);
+  if (e.key === "ArrowRight") navProperty(1);
+});
+
+// バックドロップクリックで閉じる
+document.getElementById("modal-backdrop").addEventListener("click", (e) => {
+  if (e.target.id === "modal-backdrop") closeModal();
+});
+
+// 初期化
+renderTable();
+</script>
+
+</body>
+</html>
