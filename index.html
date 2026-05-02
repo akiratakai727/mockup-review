@@ -1,46 +1,182 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>HIT 物件検索UI モック レビュー</title>
-  <style>
-    body { font-family: -apple-system, "Segoe UI", "Hiragino Sans", "Meiryo", sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; color: #1f2937; }
-    h1 { color: #1f2937; border-bottom: 2px solid #0284c7; padding-bottom: 8px; }
-    p { line-height: 1.7; }
-    .mock-list { list-style: none; padding: 0; }
-    .mock-list li { background: #f0f9ff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 16px; margin-bottom: 12px; }
-    .mock-list a { font-size: 16px; font-weight: 600; color: #0284c7; text-decoration: none; }
-    .mock-list a:hover { text-decoration: underline; }
-    .desc { color: #6b7280; font-size: 13px; margin-top: 4px; }
-    .note { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 12px 16px; margin: 24px 0; font-size: 13px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HIT 物件検索UI モック</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    font-family: -apple-system, BlinkMacSystemFont, "Yu Gothic UI", "Yu Gothic", "Meiryo", "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+    background: #ffffff;
+    color: #1a1a1a;
+    line-height: 1.6;
+  }
+  .container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 48px 32px 80px;
+  }
+  h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1f2937;
+    padding-bottom: 14px;
+    border-bottom: 2px solid #93c5fd;
+    margin-bottom: 28px;
+  }
+  .intro {
+    font-size: 15px;
+    color: #374151;
+    margin-bottom: 28px;
+    line-height: 1.8;
+  }
+  .section-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 28px 0 10px;
+    padding-left: 4px;
+  }
+  .section-label:first-of-type { margin-top: 0; }
+  .card {
+    display: block;
+    background: #e0f2fe;
+    border: 1px solid #bae6fd;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    text-decoration: none;
+    transition: background 0.15s, border-color 0.15s, transform 0.05s;
+  }
+  .card:hover {
+    background: #cfeafd;
+    border-color: #7dd3fc;
+  }
+  .card:active {
+    transform: translateY(1px);
+  }
+  .card-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #1e40af;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .card-title .arrow { color: #1e40af; }
+  .card-title .ver { color: #1e40af; font-weight: 700; }
+  .card-title .new-badge {
+    background: #f59e0b;
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 3px;
+    letter-spacing: 0.5px;
+  }
+  .card-desc {
+    font-size: 13px;
+    color: #374151;
+    line-height: 1.55;
+  }
+  .common-note {
+    background: #fef3c7;
+    border-left: 4px solid #f59e0b;
+    padding: 14px 18px;
+    margin-top: 28px;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #78350f;
+    line-height: 1.7;
+  }
+  .common-note strong { color: #78350f; }
+  .footer {
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+    font-size: 11px;
+    color: #9ca3af;
+    text-align: center;
+  }
+</style>
 </head>
 <body>
+<div class="container">
+
   <h1>HIT 物件検索UI モック</h1>
-  <p>平沢さん・藤原さんへ：以下4つのモックをご確認ください。気になる点（不要な項目／追加してほしい項目／並び順を変えたい項目など）があればお気軽にお知らせください。</p>
 
-  <ul class="mock-list">
-    <li>
-      <a href="hit_search_mockup_sale_mansion_v1_8.html">▶ 売_区分マンション（v1.8）</a>
-      <div class="desc">中古マンションの売買物件検索</div>
-    </li>
-    <li>
-      <a href="hit_search_mockup_rent_mansion_v1_5.html">▶ 貸_区分マンション（v1.5）</a>
-      <div class="desc">賃貸マンションの物件検索</div>
-    </li>
-    <li>
-      <a href="hit_search_mockup_sale_land_v1_5.html">▶ 売_土地（v1.5）</a>
-      <div class="desc">土地・古家付き土地の売買物件検索</div>
-    </li>
-    <li>
-      <a href="hit_search_mockup_sale_bldg_v1_3.html">▶ 売_収益物件 一棟（v1.3）</a>
-      <div class="desc">一棟マンション・一棟ビルの売買物件検索（積算評価・収支シミュレーション付き）</div>
-    </li>
-  </ul>
+  <p class="intro">
+    平沢さん・藤原さんへ：以下7つのモックをご確認ください。気になる点（不要な項目／追加してほしい項目／並び順を変えたい項目など）があればお気軽にお知らせください。
+  </p>
 
-  <div class="note">
-    <strong>共通機能：</strong>
-    各モックの最上部に「物件ステータス」（在庫／変更／推定成約／成約）と「データ期間」（暦年指定）の絞り込みフィルタがあります。データはダミーで、ボタン操作はモック動作のみです。
+  <!-- 既存4モック -->
+  <a class="card" href="hit_search_mockup_sale_mansion_v1_8.html">
+    <div class="card-title">
+      <span class="arrow">▶</span> 売_区分マンション <span class="ver">（v1.8）</span>
+    </div>
+    <div class="card-desc">中古マンションの売買物件検索</div>
+  </a>
+
+  <a class="card" href="hit_search_mockup_rent_mansion_v1_5.html">
+    <div class="card-title">
+      <span class="arrow">▶</span> 貸_区分マンション <span class="ver">（v1.5）</span>
+    </div>
+    <div class="card-desc">賃貸マンションの物件検索</div>
+  </a>
+
+  <a class="card" href="hit_search_mockup_sale_land_v1_5.html">
+    <div class="card-title">
+      <span class="arrow">▶</span> 売_土地 <span class="ver">（v1.5）</span>
+    </div>
+    <div class="card-desc">土地・古家付き土地の売買物件検索</div>
+  </a>
+
+  <a class="card" href="hit_search_mockup_sale_bldg_v1_3.html">
+    <div class="card-title">
+      <span class="arrow">▶</span> 売_収益物件 一棟 <span class="ver">（v1.3）</span>
+    </div>
+    <div class="card-desc">一棟マンション・一棟ビルの売買物件検索（積算評価・収支シミュレーション付き）</div>
+  </a>
+
+  <!-- 新規3モック -->
+  <a class="card" href="hit_search_mockup_sale_house_v1_0.html">
+    <div class="card-title">
+      <span class="arrow">▶</span> 売_戸建 <span class="ver">（v1.0）</span>
+      <span class="new-badge">NEW</span>
+    </div>
+    <div class="card-desc">中古戸建・新築戸建の売買物件検索（土地坪単価・建物坪単価の二重表示、建替え視点の建築可能規模シミュレーション付き）</div>
+  </a>
+
+  <a class="card" href="hit_search_mockup_rent_bldg_v1_0.html">
+    <div class="card-title">
+      <span class="arrow">▶</span> 貸_一棟 <span class="ver">（v1.0）</span>
+      <span class="new-badge">NEW</span>
+    </div>
+    <div class="card-desc">一棟まるごと月額賃料で借りる物件検索（サブリース業者・法人借上げ・寮・社宅向け、戸数・空室率・レントロール表示）</div>
+  </a>
+
+  <a class="card" href="hit_search_mockup_rent_house_v1_0.html">
+    <div class="card-title">
+      <span class="arrow">▶</span> 貸_戸建 <span class="ver">（v1.0）</span>
+      <span class="new-badge">NEW</span>
+    </div>
+    <div class="card-desc">戸建賃貸の物件検索（接道方位・庭・駐車場の可視化）</div>
+  </a>
+
+  <!-- 共通機能 -->
+  <div class="common-note">
+    <strong>共通機能：</strong>各モックの最上部に「物件ステータス」（在庫／変更／推定成約／成約）と「データ期間」（暦年指定）の絞り込みフィルタがあります。データはダミーで、ボタン操作はモック動作のみです。
   </div>
+
+  <div class="footer">
+    最終更新：2026年5月2日　/　全7モック対応版
+  </div>
+
+</div>
 </body>
 </html>
