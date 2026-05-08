@@ -41,6 +41,35 @@
     padding-left: 4px;
   }
   .section-label:first-of-type { margin-top: 0; }
+
+  /* 統合DBセクション用見出し */
+  .section-heading {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 40px 0 8px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #c4b5fd;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-heading .new-section-badge {
+    font-size: 11px;
+    background: #7c3aed;
+    color: white;
+    padding: 3px 9px;
+    border-radius: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+  .section-desc {
+    font-size: 14px;
+    color: #4b5563;
+    margin-bottom: 14px;
+    line-height: 1.7;
+  }
+
   .card {
     display: block;
     background: #e0f2fe;
@@ -84,6 +113,37 @@
     color: #374151;
     line-height: 1.55;
   }
+
+  /* 統合DBモック用カード（紫系） */
+  .card-unified {
+    background: #f3e8ff;
+    border-color: #ddd6fe;
+  }
+  .card-unified:hover {
+    background: #e9d5ff;
+    border-color: #c4b5fd;
+  }
+  .card-unified .card-title {
+    color: #6d28d9;
+  }
+  .card-unified .card-title .arrow,
+  .card-unified .card-title .ver {
+    color: #6d28d9;
+  }
+  .card-unified .new-badge {
+    background: #7c3aed;
+  }
+  .card-unified .card-desc ul {
+    margin: 6px 0 0 18px;
+    padding: 0;
+  }
+  .card-unified .card-desc li {
+    font-size: 12px;
+    color: #4b5563;
+    margin-bottom: 2px;
+    line-height: 1.5;
+  }
+
   .common-note {
     background: #fef3c7;
     border-left: 4px solid #f59e0b;
@@ -95,6 +155,19 @@
     line-height: 1.7;
   }
   .common-note strong { color: #78350f; }
+
+  .unified-note {
+    background: #faf5ff;
+    border-left: 4px solid #7c3aed;
+    padding: 14px 18px;
+    margin-top: 14px;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #4b5563;
+    line-height: 1.7;
+  }
+  .unified-note strong { color: #6d28d9; }
+
   .footer {
     margin-top: 32px;
     padding-top: 16px;
@@ -111,10 +184,12 @@
   <h1>HIT 物件検索UI モック</h1>
 
   <p class="intro">
-    平沢さん・藤原さんへ：以下7つのモックをご確認ください。気になる点（不要な項目／追加してほしい項目／並び順を変えたい項目など）があればお気軽にお知らせください。
+    平沢さん・藤原さんへ：以下のモックをご確認ください。気になる点（不要な項目／追加してほしい項目／並び順を変えたい項目など）があればお気軽にお知らせください。
   </p>
 
-  <!-- 既存4モック -->
+  <!-- ===== 検索UIモック（種別ごと・全7種別） ===== -->
+  <div class="section-label">検索UIモック（種別ごと・全7種別）</div>
+
   <a class="card" href="hit_search_mockup_sale_mansion_v1_8.html">
     <div class="card-title">
       <span class="arrow">▶</span> 売_区分マンション <span class="ver">（v1.8）</span>
@@ -143,7 +218,6 @@
     <div class="card-desc">一棟マンション・一棟ビルの売買物件検索（積算評価・収支シミュレーション付き）</div>
   </a>
 
-  <!-- 新規3モック -->
   <a class="card" href="hit_search_mockup_sale_house_v1_0.html">
     <div class="card-title">
       <span class="arrow">▶</span> 売_戸建 <span class="ver">（v1.0）</span>
@@ -173,8 +247,41 @@
     <strong>共通機能：</strong>各モックの最上部に「物件ステータス」（在庫／変更／推定成約／成約）と「データ期間」（暦年指定）の絞り込みフィルタがあります。データはダミーで、ボタン操作はモック動作のみです。
   </div>
 
+
+  <!-- ===== 統合DBモック（新方向の検討用） ===== -->
+  <div class="section-heading">
+    統合DBモック（新方向の検討用）
+    <span class="new-section-badge">NEW SECTION</span>
+  </div>
+  <p class="section-desc">
+    種別ごとの検索UIとは別に、レインズ・楽待・スーモ・健美家の <strong>4ソース統合データベース</strong> を活かした収益物件のモックです。HITが将来的に持ち得る独自性を表現したもので、既存の楽待・健美家・スーモにはない切り口を含みます。
+  </p>
+
+  <a class="card card-unified" href="hit_unified_db_mockup_sale_bldg_v1_0.html">
+    <div class="card-title">
+      <span class="arrow">▶</span> 統合DB × 売_収益物件 <span class="ver">（v1.0）</span>
+      <span class="new-badge">NEW</span>
+    </div>
+    <div class="card-desc">
+      4ソース横断検索＋HIT独自の評価軸を盛り込んだ収益物件モック。
+      <ul>
+        <li><strong>4ソース横断検索</strong>：1物件を4ポータルでまとめて確認（取得ソースをバッジ表示）</li>
+        <li><strong>建物属性アイコン</strong>：エレベーター・オートロック・宅配BOX・24hゴミ・駐車場・管理人を一覧で可視化</li>
+        <li><strong>HIT独自軸</strong>：在庫日数・値下げ回数で物件をソート可能（既存ポータルにない切り口）</li>
+        <li><strong>価格妥当性評価</strong>：同建物・同区・同築年帯の中央値と比較</li>
+        <li><strong>建物部屋構成</strong>：把握できている部屋を個別表示。未把握分は推定で補完</li>
+        <li><strong>M2M利回り（再契約後想定）</strong>：全戸が現市場家賃で再契約された場合の表面利回りを試算（数年後の収益力の参考値）</li>
+      </ul>
+    </div>
+  </a>
+
+  <div class="unified-note">
+    <strong>このモックについて：</strong>データはすべてダミーです。M2M利回り・部屋構成補完・価格妥当性評価などは将来実装予定の機能で、現時点では構想レベルでの見え方確認用です。お気付きの点や「この機能は不要」「こういう切り口が欲しい」等のご意見をいただけると今後の実装方針に活かせます。
+  </div>
+
+
   <div class="footer">
-    最終更新：2026年5月2日　/　全7モック対応版
+    最終更新：2026年5月8日　/　全7検索UIモック ＋ 統合DBモック1種類
   </div>
 
 </div>
