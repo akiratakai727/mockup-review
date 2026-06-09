@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>松島3丁目 利回り精査ツール（社内用）</title>
+<style>
+  :root{
+    --ink:#22231f; --muted:#6f6e67; --hint:#9a988f;
+    --paper:#fbfaf7; --card:#ffffff; --line:#e7e4dc;
+    --good:#0f6e56; --good-bg:#e1f5ee; --warn:#854f0b; --warn-bg:#faeeda; --neutral-bg:#f1efe8;
+    --mono:'SFMono-Regular',Consolas,'Roboto Mono','Yu Gothic',monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Yu Gothic',Meiryo,'Noto Sans JP',sans-serif;
+    line-height:1.6;-webkit-text-size-adjust:100%;}
+  .wrap{max-width:620px;margin:0 auto;padding:20px 16px 48px}
+  h1{font-size:19px;font-weight:600;margin:0 0 2px}
+  .sub{font-size:13px;color:var(--muted);margin:0 0 18px}
+  .cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:20px}
+  .card{border-radius:12px;padding:12px 14px}
+  .card .k{font-size:12px;margin:0}
+  .card .k2{font-size:11px;margin:0 0 4px}
+  .card .v{font-size:22px;font-weight:600;margin:0;font-family:var(--mono);letter-spacing:-.02em}
+  .card.good{background:var(--good-bg)} .card.good .k,.card.good .v{color:var(--good)} .card.good .k2{color:var(--good);opacity:.75}
+  .card.warn{background:var(--warn-bg)} .card.warn .k,.card.warn .v{color:var(--warn)} .card.warn .k2{color:var(--warn);opacity:.75}
+  .card.neu{background:var(--neutral-bg)} .card.neu .k,.card.neu .v{color:var(--ink)} .card.neu .k2{color:var(--hint)}
+  .sec{font-size:12px;color:var(--muted);margin:20px 0 6px;font-weight:600}
+  .ctl{display:flex;align-items:center;gap:12px;padding:7px 0}
+  .ctl label{font-size:13px;color:var(--muted);flex:0 0 150px;line-height:1.3}
+  .ctl input[type=range]{flex:1;accent-color:var(--good)}
+  .ctl .out{font-size:13px;font-weight:600;flex:0 0 110px;text-align:right;font-family:var(--mono)}
+  .ctl .out small{display:block;font-size:10px;font-weight:400;color:var(--hint)}
+  .row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:8px 0;border-bottom:.5px solid var(--line)}
+  .row:last-child{border-bottom:none}
+  .row .lab{font-size:14px}
+  .row .frm{font-size:11px;color:var(--hint);font-family:var(--mono);flex:1;text-align:center}
+  .row .val{font-size:14px;font-weight:600;white-space:nowrap;font-family:var(--mono)}
+  .row .val small{font-size:11px;font-weight:400;color:var(--hint)}
+  .note{font-size:12px;color:var(--muted);background:var(--card);border:.5px solid var(--line);border-radius:10px;padding:12px 14px;margin-top:22px}
+  .note b{color:var(--ink);font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>松島3丁目 利回り精査ツール（社内用）</h1>
+  <p class="sub">ワンルーム戸数（最大15）を手動で設定し、残りの専有をファミリー住戸として自動算出。専有を使い切る組み合わせを探すツール。</p>
+
+  <div class="cards">
+    <div class="card good"><p class="k">表面利回り</p><p class="k2">土地＋建築のみ</p><p class="v" id="grossY">–</p></div>
+    <div class="card warn"><p class="k">満室年収</p><p class="k2">合計</p><p class="v" id="incomeCard">–</p></div>
+    <div class="card neu"><p class="k">専有の使用率</p><p class="k2">住戸化／専有</p><p class="v" id="useRate">–</p></div>
+  </div>
+
+  <div class="sec">動かせる前提</div>
+  <div class="ctl"><label>ワンルーム戸数<br><span style="font-size:11px;color:var(--hint)">最大15</span></label><input type="range" id="wr" min="0" max="15" step="1" value="14"><span class="out" id="wr_o"></span></div>
+  <div class="ctl"><label>ワンルーム面積<br><span style="font-size:11px;color:var(--hint)">㎡（最低25）</span></label><input type="range" id="unit" min="25" max="40" step="1" value="25"><span class="out" id="unit_o"></span></div>
+  <div class="ctl"><label>ワンルーム賃料<br><span style="font-size:11px;color:var(--hint)">円/㎡/月</span></label><input type="range" id="rent" min="2500" max="6000" step="50" value="3800"><span class="out" id="rent_o"></span></div>
+  <div class="ctl"><label>ファミリー面積<br><span style="font-size:11px;color:var(--hint)">㎡（15戸超）</span></label><input type="range" id="fam" min="40" max="80" step="1" value="70"><span class="out" id="fam_o"></span></div>
+  <div class="ctl"><label>ファミリー賃料<br><span style="font-size:11px;color:var(--hint)">円/㎡/月</span></label><input type="range" id="frent" min="2000" max="5000" step="50" value="3200"><span class="out" id="frent_o"></span></div>
+  <div class="ctl"><label>建築費<br><span style="font-size:11px;color:var(--hint)">万円/坪</span></label><input type="range" id="tsubo" min="90" max="200" step="5" value="130"><span class="out" id="tsubo_o"></span></div>
+  <div class="ctl"><label>共用部率<br><span style="font-size:11px;color:var(--hint)">小規模は18〜22%目安</span></label><input type="range" id="kyo" min="5" max="30" step="1" value="15"><span class="out" id="kyo_o"></span></div>
+  <div class="ctl"><label>解体費<br><span style="font-size:11px;color:var(--hint)">更地渡し=0</span></label><input type="range" id="demo" min="0" max="1000" step="50" value="0"><span class="out" id="demo_o"></span></div>
+
+  <div class="sec">① 容積の天井 → 専有面積</div>
+  <div class="row"><span class="lab">採用容積率</span><span class="frm">min(400, 6.36×0.6)</span><span class="val" id="far">–</span></div>
+  <div class="row"><span class="lab">専有面積（＝容積対象延床）</span><span class="frm">111.48 × 容積率</span><span class="val" id="senyu">–</span></div>
+
+  <div class="sec">② 住戸の内訳（ワンルーム戸数は手動）</div>
+  <div class="row"><span class="lab">ワンルーム使用面積</span><span class="frm">戸数 × 面積</span><span class="val" id="wr_area">–</span></div>
+  <div class="row"><span class="lab">残りの専有面積</span><span class="frm">専有 − ワンルーム分</span><span class="val" id="rem">–</span></div>
+  <div class="row"><span class="lab">ファミリー戸数</span><span class="frm">残り ÷ ファミリー面積</span><span class="val" id="fam_units">–</span></div>
+  <div class="row"><span class="lab">未使用の専有面積</span><span class="frm">どの住戸にも未割当</span><span class="val" id="waste">–</span></div>
+
+  <div class="sec">③ 収入</div>
+  <div class="row"><span class="lab">ワンルーム年収</span><span class="frm">戸 × 面積 × 賃料 × 12</span><span class="val" id="wr_inc">–</span></div>
+  <div class="row"><span class="lab">ファミリー年収</span><span class="frm">戸 × 面積 × 賃料 × 12</span><span class="val" id="fam_inc">–</span></div>
+  <div class="row"><span class="lab">満室年収（合計）</span><span class="frm">ワンルーム＋ファミリー</span><span class="val" id="income">–</span></div>
+
+  <div class="sec">④ 事業費と利回り</div>
+  <div class="row"><span class="lab">土地価格</span><span class="frm">概要書</span><span class="val">13,300 万円</span></div>
+  <div class="row"><span class="lab">施工延床</span><span class="frm">専有 ÷ (1−共用部率)</span><span class="val" id="cfa">–</span></div>
+  <div class="row"><span class="lab">建築費</span><span class="frm">施工延床坪 × 坪単価</span><span class="val" id="build">–</span></div>
+  <div class="row"><span class="lab">物件価格（土地＋建築）</span><span class="frm">表面の分母</span><span class="val" id="price">–</span></div>
+  <div class="row" style="border-bottom:none"><span class="lab" style="font-weight:600">表面利回り</span><span class="frm">満室年収 ÷ 物件価格</span><span class="val" id="grossY2">–</span></div>
+
+  <div class="note">
+    <b>前提と注意</b><br>
+    ・用途地域は「商業地域・容積400%・建蔽80%・防火地域・高度規制なし」。最新の物件概要書・江戸川区都市計画情報ともに一致。<br>
+    ・<b>天空率・日影は未考慮</b>の足切り計算。道路斜線で前面上部が少し削れる分は無視しているため、やや楽観側に出ます。<br>
+    ・日影規制は対象外で問題なし（敷地＝商業で日影規制なし、影が伸びる北側隣接も商業のため越境日影なし、住居系は南〜南西側）。<br>
+    ・専有面積＝容積対象延床としています（共用廊下・階段・EVは容積に入らないため）。容積に入る共用部がある分、戸数は下振れすることがあります。<br>
+    ・江戸川区のワンルーム規制（住宅等整備基準条例）：3階以上かつ10戸以上で対象。最低住戸面積25㎡、15戸を超える部分はファミリー向け住戸（平均70㎡以上等）の附置義務。本ツールはワンルームを最大15戸とし、残りをファミリーとして計上。最新基準は区窓口で要確認。<br>
+    ・専有を使い切るほど総家賃は上がる。ワンルームを1戸減らすと残り面積が増え、より広いファミリー（70㎡等）が成立しやすい。一方ワンルームの方が㎡単価が高ければワンルームを増やす方が有利な場合もある。戸数を振って最適点を探す。<br>
+    ・共用部率は専有を削らず、建てる床（建築費）だけを増やします。小規模ワンルームは18〜22%が目安。<br>
+    ・建築費は本体＋付帯（外構・地盤・引込・設計監理）を含む坪単価の想定。小規模東京RCは130〜150万円/坪が目安。<br>
+    ・諸費用・解体は表面利回りには含めず（必要時に別途加味）。解体費は更地渡しなら0、買主負担なら鉄骨造46坪前後で230〜320万円が目安。<br>
+    ・残り面積がファミリー1戸に満たない場合は0戸表示（その面積は宙に浮くため、実務ではワンルームに戻すか1戸作るか判断）。<br>
+    ・一次検討用。提案・確認申請には設計事務所のボリュームプランが必要です。
+  </div>
+</div>
+
+<script>
+  var $=function(id){return document.getElementById(id);};
+  var yen=function(n){return Math.round(n).toLocaleString('ja-JP');};
+  var T=3.305785;
+  function calc(){
+    var land=111.48, road=6.36, designFar=400, landPrice=13300;
+    var wr=+$('wr').value, unit=+$('unit').value, rent=+$('rent').value;
+    var fam=+$('fam').value, frent=+$('frent').value, tsubo=+$('tsubo').value, c=+$('kyo').value/100, demo=+$('demo').value;
+    $('wr_o').innerHTML=wr+' 戸';
+    $('unit_o').innerHTML=unit+' ㎡';
+    $('rent_o').innerHTML=yen(rent)+' 円';
+    $('fam_o').innerHTML=fam+' ㎡';
+    $('frent_o').innerHTML=yen(frent)+' 円';
+    $('tsubo_o').innerHTML=tsubo+' 万<small>≒ '+(tsubo/T).toFixed(1)+' 万/㎡</small>';
+    $('kyo_o').innerHTML=(c*100).toFixed(0)+' %';
+    $('demo_o').innerHTML=yen(demo)+' 万円';
+    var far=Math.min(designFar, road*0.6*100);
+    $('far').textContent=far.toFixed(1)+' %';
+    var senyu=land*far/100; $('senyu').innerHTML=senyu.toFixed(0)+' ㎡ <small>('+(senyu/T).toFixed(0)+' 坪)</small>';
+    var wrArea=wr*unit;
+    var rem=senyu-wrArea; if(rem<0) rem=0;
+    var famUnits=Math.floor(rem/fam);
+    var used=wrArea+famUnits*fam; if(used>senyu) used=senyu;
+    var waste=senyu-used; if(waste<0) waste=0;
+    var over=wrArea>senyu;
+    $('wr_area').innerHTML=wrArea.toFixed(0)+' ㎡'+(over?' <small>(専有超過)</small>':'');
+    $('rem').textContent=rem.toFixed(0)+' ㎡';
+    $('fam_units').innerHTML=famUnits+' 戸'+(famUnits===0&&rem>0?' <small>(残りが1戸に満たない)</small>':'');
+    $('waste').innerHTML=waste.toFixed(0)+' ㎡'+(waste>=fam*0.6?' <small>(もったいない)</small>':'');
+    var wrInc=wrArea*rent*12/10000;
+    var famInc=famUnits*fam*frent*12/10000;
+    var income=wrInc+famInc;
+    $('wr_inc').textContent=yen(wrInc)+' 万円';
+    $('fam_inc').textContent=yen(famInc)+' 万円';
+    $('income').textContent=yen(income)+' 万円';
+    $('incomeCard').textContent=yen(income)+' 万';
+    $('useRate').textContent=(used/senyu*100).toFixed(0)+' %';
+    var cfa=senyu/(1-c); $('cfa').innerHTML=cfa.toFixed(0)+' ㎡ <small>('+(cfa/T).toFixed(0)+' 坪)</small>';
+    var build=(cfa/T)*tsubo; $('build').textContent=yen(build)+' 万円';
+    var price=landPrice+build; $('price').textContent=yen(price)+' 万円';
+    var grossY=income/price*100;
+    $('grossY').textContent=grossY.toFixed(2)+' %';
+    $('grossY2').textContent=grossY.toFixed(2)+' %';
+  }
+  ['wr','unit','rent','fam','frent','tsubo','kyo','demo'].forEach(function(id){$(id).addEventListener('input',calc);});
+  calc();
+</script>
+</body>
+</html>
